@@ -191,7 +191,30 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 <section id="simuladores" class="modulo"><h2>2. Simuladores: treine aqui, acerte no oficial</h2>
 <p class="sub">Nada é enviado. Use para ensaiar com os dados do seu drone e chegar ao sistema oficial sabendo exatamente o que vai digitar.</p>
 
-<h3>🧪 A. Simulador SISANT — monte sua certidão de treino</h3>
+<h3 id="sim-anatel">🧪 A. Simulador ANATEL — monte seu processo no SEI (treino)</h3>
+<p class="small">Desde 08/09/2026, o drone importado para uso próprio é homologado pelo <strong>SEI da ANATEL</strong> (o Mosaico/SCH não recebe mais pedidos). Responda como é o seu caso e receba o roteiro de treino: já homologado, pronto para peticionar, pendência para resolver ou caminho errado.</p>
+<div class="grid g2">
+<div>
+<label>Como esse drone chegou a você?</label><select id="aOrigem"><option value="loja">Comprei em loja oficial / revenda autorizada no Brasil</option><option value="importado" selected>Importei eu mesmo (viagem ou compra internacional), para uso próprio</option><option value="terceiro">Comprei no Brasil de terceiro/marketplace, sem certeza da homologação</option><option value="revenda">Quero vender / importar para revender</option></select>
+<label>Marca e número ANATEL encontrados no equipamento</label><select id="aSelo"><option value="ambos">No drone e no controle</option><option value="drone">Só no drone</option><option value="controle">Só no controle</option><option value="nenhum" selected>Em nenhum dos dois</option><option value="naosei">Ainda não procurei</option></select>
+<label>Seu modelo está na Lista de Drones Importados da ANATEL?</label><select id="aLista"><option value="sim">Sim, está na Lista (já aprovado)</option><option value="nao">Não está na Lista</option><option value="naoconferi" selected>Ainda não conferi</option><option value="naoconforme">Está entre os NÃO conformes</option></select>
+<label>O drone ficou retido na remessa/alfândega?</label><select id="aRetido"><option value="nao" selected>Não, já está comigo</option><option value="sim">Sim, está retido aguardando liberação</option></select>
+<label>Treine a digitação: modelo como está na etiqueta</label><input id="aModeloEtiqueta" placeholder="Ex.: DJI MINI 4 PRO">
+<label>…e como você digitaria no SEI</label><input id="aModeloDigitado" placeholder="Digite igualzinho ao da etiqueta">
+</div>
+<div>
+<div class="alert blue"><strong>Documentos do processo (marque o que já separou):</strong>
+<label class="check"><input type="checkbox" id="aDocFotos"> Fotos nítidas do drone e do controle mostrando modelo, nº de série e FCC ID</label>
+<label class="check"><input type="checkbox" id="aDocCompra"> Comprovante da compra internacional (invoice, pedido/pagamento, DIS ou e-DBV)</label>
+<label class="check"><input type="checkbox" id="aDocCert"> Certificado internacional (frequências/potências) + manual — exigido se o modelo estiver fora da Lista</label>
+</div>
+<button class="btn" onclick="simularAnatel()">Montar meu processo de treino →</button>
+<div id="resAnatel" class="result"></div>
+</div>
+</div>
+
+<hr style="border:0;border-top:1px solid var(--linha);margin:26px 0">
+<h3 id="sim-sisant">🧪 B. Simulador SISANT — monte sua certidão de treino</h3>
 <div class="grid g2">
 <div>
 <label>Seu nome / empresa</label><input id="sNome" placeholder="Nome do operador">
@@ -206,7 +229,7 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 </div>
 
 <hr style="border:0;border-top:1px solid var(--linha);margin:26px 0">
-<h3>🧪 B. Simulador SARPAS NG — peça um voo fictício nas 8 etapas</h3>
+<h3 id="sim-sarpas">🧪 C. Simulador SARPAS NG — peça um voo fictício nas 8 etapas</h3>
 <p class="small">O assistente oficial trabalha em: <strong>Dados → Local → Referência → Altura → Datas → Períodos → Documentos → Verificação</strong>. Preencha o resumo abaixo e receba uma “análise preliminar” de treino.</p>
 <div class="grid g2">
 <div>
@@ -366,9 +389,38 @@ function renderTrilha(){var tr=TRILHAS[trilhaAtual],e=tr.etapas[etapaAtual];
  var box=document.getElementById("boxTrilha");box.classList.remove("animar");void box.offsetWidth;box.classList.add("animar");
  document.getElementById("btnAnterior").disabled=etapaAtual===0;
  document.getElementById("btnProximo").textContent=etapaAtual===tr.etapas.length-1?"Concluir trilha ✓":"Próxima etapa →";
- document.getElementById("fimTrilha").innerHTML=etapaAtual===tr.etapas.length-1?'<a class="btn amarelo" href="#simuladores">Praticar no simulador →</a>':"";}
+ document.getElementById("fimTrilha").innerHTML=etapaAtual===tr.etapas.length-1?'<button class="btn amarelo" onclick="irSimulador(trilhaAtual)">Praticar no simulador →</button>':"";}
+function irSimulador(nome){var alvo={anatel:"sim-anatel",sisant:"sim-sisant",sarpas:"sim-sarpas"}[nome]||"simuladores";abrirModulo("simuladores");setTimeout(function(){var el=document.getElementById(alvo);if(el){el.scrollIntoView({behavior:"smooth",block:"start"})}},120)}
 function moverTrilha(d){var tr=TRILHAS[trilhaAtual];etapaAtual=Math.min(tr.etapas.length-1,Math.max(0,etapaAtual+d));renderTrilha();document.getElementById("jornada").scrollIntoView({behavior:"smooth"})}
 abrirTrilha("sisant");
+
+/* ============ SIMULADOR ANATEL (SEI) ============ */
+function simularAnatel(){var r=document.getElementById("resAnatel");
+ var origem=document.getElementById("aOrigem").value,selo=document.getElementById("aSelo").value,lista=document.getElementById("aLista").value,retido=document.getElementById("aRetido").value;
+ var fotos=document.getElementById("aDocFotos").checked,compra=document.getElementById("aDocCompra").checked,cert=document.getElementById("aDocCert").checked;
+ var et=(document.getElementById("aModeloEtiqueta").value||"").trim().toLowerCase(),dg=(document.getElementById("aModeloDigitado").value||"").trim().toLowerCase();
+ var msgs=[],classe="result show",titulo="";
+ function fim(){r.className=classe;r.innerHTML="<h3 style='margin-top:0'>"+titulo+"</h3><ul>"+msgs.map(function(m){return "<li>"+m+"</li>"}).join("")+"</ul><p class='small'>Simulação educacional: nada foi enviado. O processo real é no SEI da ANATEL, seguindo o Manual de Uso Próprio (v3.0.4).</p>";r.scrollIntoView({behavior:"smooth",block:"center"})}
+ if(lista==="naoconforme"){titulo="⛔ Treino: este modelo não é homologável";classe+=" stop";msgs.push("Seu modelo está na lista de drones <strong>não conformes</strong> da ANATEL: não adianta abrir processo no SEI. Não voe com ele no Brasil; procure o vendedor/loja sobre devolução ou substituição por modelo homologável.");return fim()}
+ if(origem==="revenda"){titulo="⛔ Treino: caminho errado para revenda";classe+=" stop";msgs.push("Declaração de uso próprio <strong>não autoriza vender</strong>. Produto para comercialização segue <strong>certificação pelo sistema Certifica</strong>, com organismo de certificação designado (OCD), ensaios e responsável pelo produto no Brasil.");msgs.push("Se a ideia é revender drone importado, monte esse custo no preço antes de importar — não depois.");return fim()}
+ if(selo==="ambos"){titulo="🟢 Treino: ele já é homologado — nada a peticionar";msgs.push("Drone e controle com marca/número ANATEL: <strong>não se homologa de novo</strong> o que já saiu homologado de fábrica.");msgs.push("Fotografe os números, guarde junto da certidão SISANT e siga para a Trilha 2 (SISANT). Na dúvida sobre o número, confirme no Painel Consulta de Produtos da ANATEL.");return fim()}
+ if(origem==="loja"){titulo="🟠 Treino: cobre da loja, não do SEI";classe+=" bad";msgs.push("Produto vendido no Brasil já tem de sair homologado pelo fabricante/vendedor — e <strong>não entra</strong> na declaração de uso próprio.");msgs.push("Exija da loja o número de homologação do drone e do controle (ou a troca/devolução). Confira o número no Painel Consulta de Produtos da ANATEL antes de aceitar.");if(selo==="drone"||selo==="controle")msgs.push("No seu caso, só um dos dois tem selo: identifique qual falta e cobre exatamente esse item do vendedor.");return fim()}
+ if(origem==="terceiro"){titulo="🟠 Treino: compra interna não é “uso próprio” no SEI";classe+=" bad";msgs.push("A declaração de uso próprio vale para quem <strong>importou</strong> o equipamento. Comprado de terceiro no Brasil, o caminho é: consultar o Painel Consulta de Produtos, exigir do vendedor o certificado/número de homologação e, sem comprovação, negociar devolução.");msgs.push("Sem homologação comprovada, não cadastre “achando que resolve depois”: ANATEL é a etapa 1 da Jornada.");return fim()}
+ /* origem = importado para uso próprio */
+ if(selo==="naosei"){titulo="🟠 Treino: primeiro procure o selo";classe+=" bad";msgs.push("Antes de qualquer processo: procure a marca ANATEL e o número embaixo do drone, no compartimento da bateria, na caixa e no e-label do controle. Se só um dos dois tiver, o pedido é só do outro.");msgs.push("Achou nos dois? Então ele já é homologado e esta trilha termina. Não achou? Rode o simulador de novo marcando onde não há selo.");return fim()}
+ if(selo==="drone"||selo==="controle")msgs.push("Como só um dos dois tem selo, o processo no SEI é <strong>somente do item sem selo</strong> ("+(selo==="drone"?"controle":"drone")+").");
+ if(lista==="naoconferi")msgs.push("<strong>Pendência 1:</strong> confira a Lista de Drones Importados da ANATEL. É ela que define o tipo de processo e se o certificado internacional + manual serão exigidos.");
+ if(!fotos)msgs.push("<strong>Pendência:</strong> fotos nítidas do drone e do controle, de vários ângulos, mostrando a etiqueta com modelo, nº de série e FCC ID.");
+ if(retido==="sim")msgs.push("<strong>Retido na remessa:</strong> deixe o nº de série em branco, informe o <strong>código de rastreio</strong> no campo próprio e anexe o termo de compromisso de enviar os números de série quando o drone chegar. Código errado = risco de devolução da remessa.");
+ else if(!compra)msgs.push("<strong>Pendência:</strong> comprovante da compra internacional (invoice, comprovante do pedido/pagamento, DIS ou e-DBV).");
+ if(lista==="nao"&&!cert)msgs.push("<strong>Pendência:</strong> fora da Lista, anexe também o certificado internacional (frequências e potências) e o manual do produto.");
+ if(et&&dg&&et!==dg){classe+=" stop";titulo="⛔ Treino: modelo digitado diferente da etiqueta";msgs.push("Você digitou <strong>“"+dg+"”</strong> para um equipamento de etiqueta <strong>“"+et+"”</strong>. No SEI de verdade, isso leva a <strong>indeferimento ou arquivamento</strong> — e processo novo do zero. Copie caractere por caractere.");return fim()}
+ var pendente=msgs.some(function(m){return m.indexOf("Pendência")>-1});
+ if(pendente||lista==="naoconferi"){titulo="🟠 Treino: quase lá — resolva as pendências antes de peticionar";classe+=" bad"}
+ else{titulo="🟢 Treino: pronto para peticionar no SEI";msgs.push("<strong>Tipo de processo:</strong> "+(lista==="sim"?"“Certificação de Produto: Homologação de Drone” (modelo na Lista)":"“Certificação de Produto: Declaração de Conformidade – Importado Uso Próprio” (fora da Lista)")+".")}
+ msgs.push("<strong>Roteiro no oficial:</strong> SEI da ANATEL com gov.br → crie sua senha de assinatura do SEI → Peticionamento → Processo Novo → preencha a declaração (acesso público) → anexe os documentos → assine como Cidadão/Cidadã → acompanhe o e-mail e responda pendências pelo Peticionamento Intercorrente.");
+ msgs.push("Serviço <strong>gratuito</strong> (sem o boleto do rito antigo). Aprovado, afixe no drone e no controle a identificação com a marca ANATEL e o número do seu certificado — e a declaração vale só para essa unidade/nº de série.");
+ return fim()}
 
 /* ============ SIMULADOR SISANT ============ */
 function simularSisant(){var erro=document.getElementById("erroSisant"),cert=document.getElementById("certSisant");
