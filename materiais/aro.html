@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARO Preenchível — Avaliação de Risco Operacional | DRONOU</title>
+<style>
+:root{--verde:#0b6b3a;--verde2:#064e2a;--amarelo:#f2b705;--fundo:#f3f6f4;--texto:#17211b;--mut:#5c6b61;--linha:#dce5de;--vermelho:#b42318;--laranja:#b54708}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--fundo);color:var(--texto);line-height:1.55}
+.wrap{max-width:940px;margin:0 auto;padding:0 16px}
+header{background:linear-gradient(135deg,#064e2a,#0b3b5e);color:#fff;padding:34px 0 24px}
+h1{margin:0 0 6px;font-size:clamp(26px,4vw,38px)}
+section{background:#fff;border:1px solid var(--linha);border-radius:16px;padding:22px;margin:18px 0}
+h2{margin:0 0 8px;font-size:22px}h3{margin:18px 0 6px}
+label{font-weight:700;font-size:14px;display:block;margin:12px 0 5px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #b9c8bd;border-radius:10px;font:inherit;background:#fff}
+textarea{min-height:74px}
+.grid{display:grid;gap:0 14px}.g2{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+button,.btn{display:inline-block;background:var(--verde);color:#fff;border:0;border-radius:10px;padding:11px 16px;font-weight:800;cursor:pointer;text-decoration:none;margin:6px 6px 6px 0}
+button.sec,.btn.sec{background:#fff;color:var(--verde);border:2px solid var(--verde)}
+.alert{border-left:6px solid var(--amarelo);background:#fff8db;border-radius:10px;padding:13px 15px;margin:13px 0}
+.alert.red{border-color:var(--vermelho);background:#fff1f0}.alert.green{border-color:var(--verde);background:#eef8f1}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid var(--linha);padding:8px;text-align:left;vertical-align:top}th{background:#eef5f0}
+.risco{font-weight:900;border-radius:8px;padding:4px 10px;display:inline-block;min-width:92px;text-align:center}
+.r-baixo{background:#e6f4ea;color:#137333}.r-medio{background:#fef7e0;color:#b06000}.r-alto{background:#fce8e6;color:#a50e0e}
+.small{font-size:13px;color:var(--mut)}
+.doc{white-space:pre-wrap;background:#0f1f16;color:#eafff1;border-radius:12px;padding:16px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;min-height:160px}
+@media print{.no-print{display:none!important}body{background:#fff}section{break-inside:avoid}header{background:#fff;color:#000;padding:8px 0}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<p style="margin:0;font-weight:800;background:var(--amarelo);color:#231a00;display:inline-block;border-radius:999px;padding:4px 12px;font-size:13px">📝 DOCUMENTO PREENCHÍVEL</p>
+<h1>Avaliação de Risco Operacional (ARO)</h1>
+<p>Modelo prático para a Categoria Aberta do RBAC nº 100 (referência: IS nº E94-003), para revisar a cada cenário e manter atualizada nos últimos 12 meses. Baixe, preencha, gere o documento, imprima/assine e leve com os documentos do voo.</p>
+<p class="no-print"><a class="btn sec" href="index.html">← Kit completo</a><button class="sec" onclick="window.print()">🖨️ Imprimir esta página</button></p>
+</div></header>
+
+<main class="wrap">
+<div class="alert"><strong>Quando ela é exigida?</strong> Na Categoria Aberta, a ARO é obrigatória quando há pessoas não envolvidas e não anuentes a <strong>até 150 m</strong> e sem barreira mecânica que as proteja. Acima de 150 m ou com barreira adequada, ela é facultativa pelo RBAC 100 — mas fazer continua sendo fortemente recomendado (e exigível por clientes). Na Categoria Específica, a avaliação segue método aceito pela ANAC (ex.: SORA) junto ao pedido de autorização. <em>Este modelo não substitui o SORA nem parecer aeronáutico em operação complexa.</em></div>
+
+<section><h2>1. Identificação da operação</h2>
+<div class="grid g2">
+<div><label>Operador (nome/empresa + CPF/CNPJ)</label><input id="aOperador" placeholder="Ex.: Maria Silva — CPF 000.000.000-00"></div>
+<div><label>Piloto remoto em comando</label><input id="aPiloto" placeholder="Nome do piloto responsável pelo voo"></div>
+<div><label>Aeronave (modelo, série e código SISANT)</label><input id="aDrone" placeholder="Ex.: DJI Air 3S — PP-000000000"></div>
+<div><label>Categoria pretendida</label><select id="aCategoria"><option>Categoria Aberta (RBAC 100)</option><option>Resolução 806/2026 (uso voluntário deste modelo)</option><option>Categoria Específica (resumo — anexar avaliação SORA)</option></select></div>
+<div><label>Tipo de operação / cenário</label><input id="aTipo" placeholder="Ex.: foto aérea rural, inspeção de telhado, mapeamento"></div>
+<div><label>Local, data pretendida e janela</label><input id="aLocal" placeholder="Endereço/coordenadas, data e horários"></div>
+<div><label>Altura máx. (m AGL), raio e visada</label><input id="aEnvelope" placeholder="Ex.: 60 m, raio 250 m, VLOS"></div>
+<div><label>Autorização SARPAS (nº / status pretendido)</label><input id="aSarpas" placeholder="Ex.: solicitar com 4 dias; FRZ: não / sim — coordenar"></div>
+</div>
+<label>Descrição resumida da missão e do entorno (pessoas, vias, obstáculos, áreas sensíveis)</label>
+<textarea id="aDescricao" placeholder="Descreva o que será feito, onde decola/pousa, quem pode estar por perto, obstáculos e o que existe ao redor (ruas, escola, hospital, rede elétrica, aeródromo/heliponto…)."></textarea>
+</section>
+
+<section><h2>2. Perigos, controles e risco residual</h2>
+<p class="small">Para cada perigo: escolha <strong>probabilidade</strong> (1 raro → 5 quase certo) e <strong>severidade</strong> (1 insignificante → 5 catastrófica) <em>depois</em> dos controles. O risco residual é calculado: 1–4 baixo, 5–11 médio, 12–25 alto. <strong>Risco alto = não voe assim: mude o plano.</strong></p>
+<table id="tabPerigos"><tr><th style="width:23%">Perigo</th><th>Controles / mitigações que vou aplicar</th><th style="width:92px">Prob.</th><th style="width:92px">Sev.</th><th style="width:105px">Risco</th></tr></table>
+<p class="no-print"><button class="sec" onclick="addLinha()">+ Adicionar perigo</button></p>
+<div id="resumoRisco" class="alert green">Preencha a tabela para ver o resumo de risco.</div>
+<label>Perigos do meu cenário que eu marquei (atalhos — clique para adicionar linhas prontas)</label>
+<p class="no-print">
+<button class="sec" onclick="addPronto('Pessoa não envolvida entra na área de voo')">👥 Pessoa entra na área</button>
+<button class="sec" onclick="addPronto('Obstáculo / fio / torre na rota ou no retorno automático (RTH)')">🗼 Obstáculo / fio / RTH</button>
+<button class="sec" onclick="addPronto('Vento ou rajada acima do planejado')">🌬️ Vento / rajada</button>
+<button class="sec" onclick="addPronto('Falha de bateria, link ou GPS')">🔋 Bateria / link / GPS</button>
+<button class="sec" onclick="addPronto('Aeronave tripulada em baixa altura')">🚁 Aeronave tripulada</button>
+<button class="sec" onclick="addPronto('Área sensível próxima (FRZ, hospital, escola, presídio, evento)')">🚫 Área sensível / FRZ</button>
+</p>
+</section>
+
+<section><h2>3. Controles gerais confirmados</h2>
+<div class="grid g2" id="controles">
+<label style="font-weight:400"><input type="checkbox" style="width:auto"> Aeronave cadastrada no SISANT, identificação legível e documentos de porte separados</label>
+<label style="font-weight:400"><input type="checkbox" style="width:auto"> Seguro de responsabilidade civil válido (quando exigido) e homologação ANATEL confirmada</label>
+<label style="font-weight:400"><input type="checkbox" style="width:auto"> Área de decolagem/pouso isolada; mínimo de 30 m de pessoas não envolvidas/não anuentes</label>
+<label style="font-weight:400"><input type="checkbox" style="width:auto"> Observador designado quando necessário; comunicação e frase de abortar combinadas</label>
+<label style="font-weight:400"><input type="checkbox" style="width:auto"> Limites de vento/clima, bateria mínima de retorno e altura de RTH definidos</label>
+<label style="font-weight:400"><input type="checkbox" style="width:auto"> Permissão do responsável pelo local e regras locais verificadas</label>
+<label style="font-weight:400"><input type="checkbox" style="width:auto"> Plano de emergência: pouso alternativo, telefones 190/192/193 e contato do operador</label>
+<label style="font-weight:400"><input type="checkbox" style="width:auto"> Privacidade/imagem: captação limitada ao necessário, sem expor pessoas/imóveis alheios</label>
+</div>
+<label>Limites “não passou, não voa” desta operação (go / no-go)</label>
+<textarea id="aGoNoGo" placeholder="Ex.: vento acima de 10 m/s = cancela; pessoa dentro de 30 m = pousa; bateria de retorno = 30%; chuva ou aeronave tripulada = encerra."></textarea>
+<div class="grid g3">
+<div><label>Data desta avaliação</label><input id="aData" type="date"></div>
+<div><label>Próxima revisão (máx. 12 meses)</label><input id="aRevisao" type="date"></div>
+<div><label>Versão</label><input id="aVersao" value="1.0"></div>
+</div>
+<label>Responsável pela avaliação (nome)</label><input id="aResponsavel" placeholder="Quem avaliou e assina abaixo">
+</section>
+
+<section><h2>4. Gerar o documento</h2>
+<p class="no-print"><button onclick="gerar()">Gerar ARO em texto</button><button class="sec" onclick="copiar()">Copiar documento</button><button class="sec" onclick="baixarTxt()">Baixar .txt</button><button class="sec" onclick="window.print()">Imprimir / salvar PDF</button></p>
+<div id="doc" class="doc">O documento gerado aparecerá aqui…</div>
+<p class="small" style="margin-top:14px">Assinatura do responsável: ________________________________________ &nbsp; Data: ____/____/________<br>
+Rubrique todas as páginas se imprimir. Guarde a ARO com SISANT, seguro e autorização SARPAS do voo. Modelo de apoio (13/10/2026) baseado no RBAC nº 100 e nas orientações públicas da ANAC (IS nº E94-003) — não é formulário oficial da ANAC e não substitui avaliação SORA/autorização na Categoria Específica.</p>
+</section>
+</main>
+
+<script>
+var perigosPadrao=[
+ ['Pessoa não envolvida entra na área de voo','Isolar decolagem/pouso, manter 30 m+, observador vigiando, pousar imediatamente se alguém entrar.'],
+ ['Obstáculo / fio / torre na rota ou no RTH','Reconhecer o local, mapear fios e torres, ajustar altura de RTH acima dos obstáculos, rota de retorno livre.'],
+ ['Vento ou rajada acima do planejado','Consultar previsão, medir no local, limite de cancelamento definido, pousar com margem de bateria.'],
+ ['Falha de bateria, link ou GPS','Baterias íntegras, margem de retorno, home point conferido, procedimento de perda de link treinado.']];
+function riscoInfo(v){if(v>=12)return['ALTO','r-alto'];if(v>=5)return['MÉDIO','r-medio'];return['BAIXO','r-baixo']}
+function addLinha(perigo,controle){var tb=document.getElementById('tabPerigos');var tr=document.createElement('tr');
+ tr.innerHTML='<td><textarea class="p-perigo" placeholder="Descreva o perigo">'+ (perigo||'') +'</textarea></td>'+
+ '<td><textarea class="p-controle" placeholder="O que vou fazer para controlar?">'+(controle||'')+'</textarea></td>'+
+ '<td><select class="p-prob">'+[1,2,3,4,5].map(function(n){return '<option'+(n===2?' selected':'')+'>'+n+'</option>'}).join('')+'</select></td>'+
+ '<td><select class="p-sev">'+[1,2,3,4,5].map(function(n){return '<option'+(n===3?' selected':'')+'>'+n+'</option>'}).join('')+'</select></td>'+
+ '<td><span class="risco"></span></td>';
+ tb.appendChild(tr);tr.querySelectorAll('select,textarea').forEach(function(e){e.addEventListener('input',atualizar)});atualizar();}
+function addPronto(t){addLinha(t,'')}
+function linhas(){return Array.from(document.querySelectorAll('#tabPerigos tr')).slice(1)}
+function atualizar(){var max=0,altos=0;linhas().forEach(function(tr){var p=+tr.querySelector('.p-prob').value,s=+tr.querySelector('.p-sev').value,v=p*s;max=Math.max(max,v);if(v>=12)altos++;var info=riscoInfo(v),el=tr.querySelector('.risco');el.textContent=v+' • '+info[0];el.className='risco '+info[1];});
+ var r=document.getElementById('resumoRisco');
+ if(!linhas().length){r.className='alert';r.textContent='Adicione ao menos os perigos do seu cenário.';return}
+ if(altos>0){r.className='alert red';r.innerHTML='<strong>⛔ NÃO VOE ASSIM:</strong> há '+altos+' perigo(s) com risco residual ALTO. Reforce controles, mude local/horário/altura ou cancele até o maior risco cair.'}
+ else if(max>=5){r.className='alert';r.innerHTML='<strong>⚠️ VOO CONDICIONADO:</strong> maior risco residual MÉDIO ('+max+'). Só avance se todos os controles listados estiverem realmente aplicados e o piloto aceitar expressamente.'}
+ else{r.className='alert green';r.innerHTML='<strong>✅ RISCO RESIDUAL BAIXO</strong> (maior: '+max+') com os controles aplicados. Mantenha os controles — risco baixo não é risco zero.'}}
+function g(id){return (document.getElementById(id).value||'—').trim()||'—'}
+function gerar(){var out='AVALIAÇÃO DE RISCO OPERACIONAL (ARO) — OPERAÇÃO COM DRONE (BRASIL)\nModelo de apoio RBAC nº 100 / IS nº E94-003 • Gerado pelo DRONOU\n\n1. IDENTIFICAÇÃO\nOperador: '+g('aOperador')+'\nPiloto em comando: '+g('aPiloto')+'\nAeronave/SISANT: '+g('aDrone')+'\nCategoria: '+g('aCategoria')+'\nTipo/cenário: '+g('aTipo')+'\nLocal/data/janela: '+g('aLocal')+'\nEnvelope: '+g('aEnvelope')+'\nSARPAS: '+g('aSarpas')+'\nDescrição: '+g('aDescricao')+'\n\n2. PERIGOS E RISCO RESIDUAL (Prob. x Sev.)\n';
+ linhas().forEach(function(tr,i){var v=+tr.querySelector('.p-prob').value * +tr.querySelector('.p-sev').value;out+=(i+1)+'. '+ (tr.querySelector('.p-perigo').value||'—') +'\n   Controles: '+(tr.querySelector('.p-controle').value||'—')+'\n   Risco residual: '+tr.querySelector('.p-prob').value+' x '+tr.querySelector('.p-sev').value+' = '+v+' ('+riscoInfo(v)[0]+')\n'});
+ var marc=[];document.querySelectorAll('#controles input:checked').forEach(function(c){marc.push(c.parentElement.textContent.trim())});
+ out+='\n3. CONTROLES GERAIS CONFIRMADOS\n'+(marc.length?marc.map(function(m){return '[x] '+m}).join('\n'):'(nenhum marcado — revise antes de assinar)');
+ out+='\n\n4. CRITÉRIOS GO / NO-GO\n'+g('aGoNoGo')+'\n\nAvaliação em: '+g('aData')+' • Revisão até: '+g('aRevisao')+' • Versão: '+g('aVersao')+'\nResponsável: '+g('aResponsavel')+'\nAssinatura: ______________________________________  Data: ____/____/________\n\nNota: documento de apoio, não oficial. Vale com os controles efetivamente aplicados; se o cenário mudar, revise a ARO.';
+ document.getElementById('doc').textContent=out;}
+function copiar(){var t=document.getElementById('doc').textContent;if(navigator.clipboard){navigator.clipboard.writeText(t);alert('ARO copiada!')}}
+function baixarTxt(){var t=document.getElementById('doc').textContent;var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain;charset=utf-8'}));a.download='ARO-drone.txt';a.click();URL.revokeObjectURL(a.href)}
+perigosPadrao.forEach(function(p){addLinha(p[0],p[1])});
+try{document.getElementById('aData').value=new Date().toISOString().slice(0,10);var d=new Date();d.setFullYear(d.getFullYear()+1);document.getElementById('aRevisao').value=d.toISOString().slice(0,10)}catch(e){}
+atualizar();
+</script>
+</body>
+</html>

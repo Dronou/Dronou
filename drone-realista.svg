@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Drone quadricóptero realista">
+  <defs>
+    <linearGradient id="corpo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e8edf1"/><stop offset=".45" stop-color="#aeb9c2"/>
+      <stop offset=".78" stop-color="#77828d"/><stop offset="1" stop-color="#59636d"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#39424c"/><stop offset="1" stop-color="#141a20"/>
+    </linearGradient>
+    <radialGradient id="lente" cx=".35" cy=".3" r=".9">
+      <stop offset="0" stop-color="#bfe3ff"/><stop offset=".35" stop-color="#39749f"/>
+      <stop offset=".75" stop-color="#12283d"/><stop offset="1" stop-color="#05090e"/>
+    </radialGradient>
+    <linearGradient id="helice" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#11171d" stop-opacity=".05"/><stop offset=".5" stop-color="#11171d" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#11171d" stop-opacity=".05"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .prop{transform-box:fill-box;transform-origin:center;animation:girar .45s linear infinite}
+    .prop.lenta{animation-duration:.7s}
+    @keyframes girar{to{transform:rotate(360deg)}}
+    @media (prefers-reduced-motion: reduce){.prop{animation:none}}
+  </style>
+
+  <ellipse cx="320" cy="322" rx="168" ry="15" fill="#000000" opacity=".20"/>
+
+  <!-- braços traseiros -->
+  <path d="M258 148 L178 96 M382 148 L462 96" stroke="#59636d" stroke-width="17" stroke-linecap="round"/>
+  <path d="M258 144 L182 94 M382 144 L458 94" stroke="#9aa6b1" stroke-width="6" stroke-linecap="round" opacity=".8"/>
+
+  <!-- hélices traseiras -->
+  <g>
+    <ellipse cx="160" cy="82" rx="86" ry="13" fill="url(#helice)" opacity=".55"/>
+    <g class="prop lenta"><path d="M76 82 Q160 66 244 82 Q160 94 76 82Z" fill="#202830" opacity=".78"/></g>
+    <rect x="146" y="82" width="28" height="22" rx="7" fill="#39424c"/><ellipse cx="160" cy="84" rx="14" ry="6" fill="#7e8a96"/>
+  </g>
+  <g>
+    <ellipse cx="480" cy="82" rx="86" ry="13" fill="url(#helice)" opacity=".55"/>
+    <g class="prop lenta"><path d="M396 82 Q480 66 564 82 Q480 94 396 82Z" fill="#202830" opacity=".78"/></g>
+    <rect x="466" y="82" width="28" height="22" rx="7" fill="#39424c"/><ellipse cx="480" cy="84" rx="14" ry="6" fill="#7e8a96"/>
+  </g>
+
+  <!-- braços dianteiros -->
+  <path d="M242 176 L116 132 M398 176 L524 132" stroke="#646f7a" stroke-width="21" stroke-linecap="round"/>
+  <path d="M242 170 L122 128 M398 170 L518 128" stroke="#a7b2bc" stroke-width="7" stroke-linecap="round" opacity=".85"/>
+
+  <!-- hélices dianteiras -->
+  <g>
+    <ellipse cx="94" cy="116" rx="94" ry="15" fill="url(#helice)" opacity=".6"/>
+    <g class="prop"><path d="M2 116 Q94 98 186 116 Q94 130 2 116Z" fill="#171e25" opacity=".82"/></g>
+    <rect x="78" y="116" width="32" height="26" rx="8" fill="#333d47"/><ellipse cx="94" cy="118" rx="16" ry="7" fill="#87939f"/>
+  </g>
+  <g>
+    <ellipse cx="546" cy="116" rx="94" ry="15" fill="url(#helice)" opacity=".6"/>
+    <g class="prop"><path d="M454 116 Q546 98 638 116 Q546 130 454 116Z" fill="#171e25" opacity=".82"/></g>
+    <rect x="530" y="116" width="32" height="26" rx="8" fill="#333d47"/><ellipse cx="546" cy="118" rx="16" ry="7" fill="#87939f"/>
+  </g>
+
+  <!-- fuselagem -->
+  <path d="M214 142 Q320 104 426 142 Q449 188 407 222 Q320 248 233 222 Q191 188 214 142Z" fill="url(#corpo)"/>
+  <path d="M238 140 Q320 118 402 140 Q356 128 320 128 Q284 128 238 140Z" fill="#ffffff" opacity=".55"/>
+  <path d="M214 176 Q320 202 426 176 Q420 206 396 224 Q320 245 244 224 Q220 206 214 176Z" fill="url(#face)"/>
+  <path d="M214 176 Q320 202 426 176" fill="none" stroke="#e8edf1" stroke-width="4" opacity=".7"/>
+
+  <!-- sensores frontais tipo "olhos" -->
+  <circle cx="266" cy="190" r="19" fill="#0a0f14"/><circle cx="266" cy="190" r="11" fill="url(#lente)"/><circle cx="262" cy="186" r="3.4" fill="#fff"/>
+  <circle cx="374" cy="190" r="19" fill="#0a0f14"/><circle cx="374" cy="190" r="11" fill="url(#lente)"/><circle cx="370" cy="186" r="3.4" fill="#fff"/>
+  <ellipse cx="320" cy="196" rx="10" ry="6" fill="#232b33"/>
+
+  <!-- pernas -->
+  <path d="M262 226 L244 286 M378 226 L396 286" stroke="#39424c" stroke-width="12" stroke-linecap="round"/>
+  <path d="M224 292 h44 M372 292 h44" stroke="#242c34" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- gimbal e câmera -->
+  <rect x="306" y="224" width="28" height="18" rx="7" fill="#242c34"/>
+  <circle cx="320" cy="260" r="27" fill="#151b21"/>
+  <circle cx="320" cy="260" r="21" fill="#232c35"/>
+  <circle cx="320" cy="260" r="12" fill="url(#lente)"/>
+  <circle cx="316" cy="256" r="3.6" fill="#ffffff"/>
+</svg>
