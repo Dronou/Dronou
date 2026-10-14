@@ -292,10 +292,10 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 <div class="card"><div class="ico">🚁</div><h3>Minhas aeronaves</h3><p>Sua frota salva no aparelho, pronta para reutilizar nos simuladores e fichas.</p></div>
 <div class="card"><div class="ico">✅</div><h3>Vou voar agora</h3><p>Checklist de campo completo, do pré-voo à emergência, pronto para imprimir.</p></div>
 </div>
-<div class="alert" style="margin-top:14px"><strong>Como funciona:</strong> pagamento único via Pix combinado pelo WhatsApp → você recebe seu <strong>código de acesso</strong> → digita abaixo uma vez e o PRO fica liberado neste aparelho/navegador.</div>
+<div class="alert" style="margin-top:14px"><strong>Como funciona:</strong> pagamento único via Pix combinado pelo Telegram → você recebe seu <strong>código de acesso</strong> → digita abaixo uma vez e o PRO fica liberado neste aparelho/navegador.</div>
 <label>Já tem seu código? Digite aqui</label>
 <input id="pCodigo" placeholder="Ex.: DRONOU-PRO-XXXX" style="max-width:420px;text-transform:uppercase">
-<p class="no-print"><button class="btn" onclick="desbloquearPro()">🔓 Desbloquear PRO</button><button class="btn amarelo" style="color:#241a00!important" onclick="abrirModulo('ajuda')">💬 Quero o PRO — falar no WhatsApp</button></p>
+<p class="no-print"><button class="btn" onclick="desbloquearPro()">🔓 Desbloquear PRO</button><a class="btn amarelo" style="color:#241a00!important" href="https://t.me/dronoubr" target="_blank" rel="noopener">✈️ Quero o PRO — falar no Telegram</a></p>
 <div id="pMsg" class="result"></div>
 </section>
 
@@ -375,25 +375,25 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 <section id="ajuda" class="modulo"><h2>8. Travou? Peça ajuda — sem compromisso</h2>
 <p class="sub">O conteúdo acima é gratuito para sempre. Se você prefere alguém conferindo com você, escolha o próximo passo. Nada aqui promete aprovação de órgão público: quem aprova é ANAC, DECEA e ANATEL.</p>
 <div class="grid g3">
-<div class="card preco"><div class="ico">🔎</div><h3>Diagnóstico gratuito</h3><p>Você conta modelo, uso e onde voa. Retornamos o mapa do que falta: ANATEL, SISANT, SARPAS, seguro, ARO ou prova.</p><span class="tag">GRÁTIS</span><span class="tag">Resposta pelo WhatsApp</span></div>
+<div class="card preco"><div class="ico">🔎</div><h3>Diagnóstico gratuito</h3><p>Você conta modelo, uso e onde voa. Retornamos o mapa do que falta: ANATEL, SISANT, SARPAS, seguro, ARO ou prova.</p><span class="tag">GRÁTIS</span><span class="tag">Resposta pelo Telegram</span></div>
 <div class="card"><div class="ico">🧭</div><h3>Regularização assistida</h3><p>Sessão guiada tela a tela com você: homologação, cadastro e primeira solicitação de voo feitos do jeito certo, sem você “emprestar” senha a ninguém.</p><span class="tag">Valor sob consulta</span></div>
 <div class="card"><div class="ico">🎓</div><h3>Preparação ANAC + operação pro</h3><p>Estudo dirigido para o exame, ARO do seu cenário, seguro e rotina profissional para trabalhar sem susto.</p><span class="tag">Valor sob consulta</span></div>
 </div>
 <form id="formLead" onsubmit="return enviarLead(event)">
 <div class="grid g2">
 <div><label>Seu nome*</label><input id="lNome" required placeholder="Como podemos te chamar?"></div>
-<div><label>WhatsApp (com DDD)*</label><input id="lWhats" required inputmode="tel" placeholder="(00) 90000-0000"></div>
+<div><label>Seu Telegram (@usuario) ou celular com DDD*</label><input id="lWhats" required placeholder="@seuusuario ou (00) 90000-0000"></div>
 <div><label>Seu drone (marca/modelo)</label><input id="lDrone" placeholder="Ex.: DJI Mini 3, Agras T40, montado FPV…"></div>
 <div><label>Como você voa?</label><select id="lPerfil"><option>Hobby / recreativo</option><option>Conteúdo / foto e vídeo</option><option>Trabalho (inspeção, mapeamento, eventos)</option><option>Agrícola</option><option>Ainda vou comprar</option></select></div>
 </div>
 <label>Onde você está travado?*</label>
 <select id="lDificuldade" required><option>Homologação ANATEL</option><option>Cadastro no SISANT</option><option>Solicitar voo no SARPAS NG</option><option>Prova teórica da ANAC</option><option>Quero trabalhar com drone</option><option>Voo sendo negado / área difícil</option><option>Outro</option></select>
 <label>Conte um pouco (opcional)</label><textarea id="lMsg" placeholder="Ex.: comprei importado, não tem selo ANATEL e o SARPAS não mostra meu drone…"></textarea>
-<label style="font-weight:400"><input type="checkbox" id="lConsent" required style="width:auto"> Autorizo o contato pelo WhatsApp sobre regularização de drones e entendo que este site é educacional, sem vínculo com ANAC, DECEA ou ANATEL. *</label>
-<p><button class="btn amarelo" type="submit">Quero meu diagnóstico gratuito →</button> <a class="btn sec" id="btnWhats" href="#" target="_blank" rel="noopener" style="display:none">Abrir WhatsApp do especialista</a></p>
+<label style="font-weight:400"><input type="checkbox" id="lConsent" required style="width:auto"> Autorizo o contato pelo Telegram sobre regularização de drones e entendo que este site é educacional, sem vínculo com ANAC, DECEA ou ANATEL. *</label>
+<p><button class="btn amarelo" type="submit">Quero meu diagnóstico gratuito →</button> <a class="btn sec" id="btnWhats" href="#" target="_blank" rel="noopener" style="display:none">Abrir o Telegram do DRONOU ↗</a></p>
 <p id="leadOk" class="small"></p>
 </form>
-<details><summary>Transparência e termos rápidos</summary><p class="small">DRONOU é marca educacional independente, sem afiliação com ANAC, DECEA, ANATEL, MAPA ou fabricantes. Normas mudam; em conflito, vale a norma e o sistema oficial. Simuladores e o simulado são treino, não geram cadastro, homologação, autorização ou certificado oficial. Nunca compartilhe sua senha gov.br: em atendimento assistido, você digita suas credenciais no seu aparelho. Dados deste formulário ficam, nesta versão demonstrativa, salvos apenas no navegador de quem preenche; o responsável pelo site deve conectar o formulário ao seu canal oficial (WhatsApp/CRM) antes de divulgar e manter política de privacidade conforme a LGPD.</p></details>
+<details><summary>Transparência e termos rápidos</summary><p class="small">DRONOU é marca educacional independente, sem afiliação com ANAC, DECEA, ANATEL, MAPA ou fabricantes. Normas mudam; em conflito, vale a norma e o sistema oficial. Simuladores e o simulado são treino, não geram cadastro, homologação, autorização ou certificado oficial. Nunca compartilhe sua senha gov.br: em atendimento assistido, você digita suas credenciais no seu aparelho. Dados deste formulário ficam, nesta versão demonstrativa, salvos apenas no navegador de quem preenche; o responsável pelo site deve conectar o formulário ao seu canal oficial (Telegram/CRM) antes de divulgar e manter política de privacidade conforme a LGPD.</p></details>
 </section>
 
 </main>
@@ -403,8 +403,8 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 
 <script>
 /* ========= CONFIG DO DONO — edite aqui antes de divulgar =========
-   Coloque seu WhatsApp com DDI+DDD, ex.: "5511999999999". Vazio = botão oculto. */
-var CONFIG = { WHATSAPP_DONO: "", PRO_HASH: "4a696912996baa183c3b4c7ee9ca5b75ba9c912e10b00cb82c8cad9510267c65" };
+   Link do Telegram (canal/grupo/atendimento), ex.: "https://t.me/dronoubr". */
+var CONFIG = { TELEGRAM_LINK: "https://t.me/dronoubr", PRO_HASH: "4a696912996baa183c3b4c7ee9ca5b75ba9c912e10b00cb82c8cad9510267c65" };
 
 /* ============ TRILHAS ============ */
 var TRILHAS = {
@@ -510,7 +510,7 @@ var QUIZ=[
 ["No RBAC 100, o seguro exigido é…",["Seguro do próprio drone (casco)","Seguro de responsabilidade civil por danos a terceiros","Seguro de vida do piloto","Nenhum seguro"],1,"Casco é opcional. O obrigatório no RBAC 100 é danos a terceiros, salvo exceções expressas."],
 ["Na Categoria Aberta, a avaliação de risco (ARO)…",["Nunca é necessária","Deve estar revisada nos últimos 12 meses quando exigida; pode ser facultativa acima de 150 m de não envolvidos ou com barreira","Vale para sempre","Só serve para agrícola"],1,"ARO por cenário, em formato aceitável, atualizada em 12 meses quando exigida."],
 ["Piloto menor de 18 anos no RBAC 100…",["Pode voar sozinho qualquer drone","Só acompanhado por piloto maior de idade responsável durante toda a operação","É sempre proibido","Só precisa de autorização dos pais no papel"],1,"Menor opera acompanhado por piloto maior responsável. Na Resolução 806 também há acompanhamento."],
-["Seu voo foi aprovado no SARPAS para 40 m, mas você quer subir a 100 m no dia. Pode?",["Pode, porque 100 é menor que 120","Não: voe exatamente no aprovado ou faça nova solicitação/adequação","Pode se avisar no WhatsApp","Pode por 5 minutos"],1,"Autorização vale para local, data, janela, altura e perfil aprovados."],
+["Seu voo foi aprovado no SARPAS para 40 m, mas você quer subir a 100 m no dia. Pode?",["Pode, porque 100 é menor que 120","Não: voe exatamente no aprovado ou faça nova solicitação/adequação","Pode se avisar no Telegram","Pode por 5 minutos"],1,"Autorização vale para local, data, janela, altura e perfil aprovados."],
 ["O aplicativo liberou o geofence. Isso significa voo autorizado no Brasil?",["Sim","Não: falta ANAC/DECEA conforme o caso","Sim, só para DJI","Sim, em área rural"],1,"Geofence é do fabricante. Autorização brasileira é ANAC + DECEA (+ ANATEL e local)."],
 ["Drone até 250 g em VLOS até 120 m, pela ANAC…",["Exige exame e seguro iguais ao RBAC 100","Fica na Resolução 806: sem cadastro/seguro/exame da ANAC, mas com SARPAS no DECEA","Não tem regra nenhuma","Precisa de certificação"],1,"Resolução 806 simplifica na ANAC; o DECEA continua exigindo SARPAS."],
 ["Você usa bateria Plus e seu Mini passa de 250 g em voo. O que vale?",["O peso da caixa (249 g)","O peso em voo da configuração que vai decolar","O peso sem bateria","Tanto faz"],1,"Enquadre pelo peso real em voo, com bateria e acessórios."],
@@ -561,9 +561,9 @@ function gerarFicha(){var l=document.getElementById("mLocal").value||"—",s=doc
 /* ============ LEADS ============ */
 function enviarLead(ev){ev.preventDefault();var lead={nome:document.getElementById("lNome").value.trim(),whats:document.getElementById("lWhats").value.trim(),drone:document.getElementById("lDrone").value.trim(),perfil:document.getElementById("lPerfil").value,dificuldade:document.getElementById("lDificuldade").value,msg:document.getElementById("lMsg").value.trim(),quando:new Date().toLocaleString("pt-BR")};
  try{var leads=JSON.parse(localStorage.getItem("voelegal_leads")||"[]");leads.push(lead);localStorage.setItem("voelegal_leads",JSON.stringify(leads))}catch(e){}
- document.getElementById("leadOk").innerHTML="✅ Recebido neste aparelho, "+lead.nome.split(" ")[0]+"! Seu diagnóstico é sobre: <b>"+lead.dificuldade+"</b>. Guarde esta tela. "+(CONFIG.WHATSAPP_DONO?"Toque no botão de WhatsApp para falar agora com o especialista.":"O especialista conectará o WhatsApp aqui antes de divulgar o site.");
+ document.getElementById("leadOk").innerHTML="✅ Recebido neste aparelho, "+lead.nome.split(" ")[0]+"! Seu diagnóstico é sobre: <b>"+lead.dificuldade+"</b>. Guarde esta tela. "+(CONFIG.TELEGRAM_LINK?"Toque no botão do Telegram para falar agora com o especialista.":"O especialista conectará o Telegram aqui antes de divulgar o site.");
  var btn=document.getElementById("btnWhats");
- if(CONFIG.WHATSAPP_DONO){var texto=encodeURIComponent("Olá! Sou "+lead.nome+". Meu drone: "+(lead.drone||"não informado")+". Perfil: "+lead.perfil+". Travei em: "+lead.dificuldade+". "+lead.msg+" Vim pelo DRONOU e quero meu diagnóstico gratuito.");btn.href="https://wa.me/"+CONFIG.WHATSAPP_DONO+"?text="+texto;btn.style.display="inline-block"}
+ if(CONFIG.TELEGRAM_LINK){btn.href=CONFIG.TELEGRAM_LINK;btn.style.display="inline-block"}
  return false}
 
 
@@ -653,9 +653,9 @@ function carregarClima(lat,lon,nome){ultimoLocal={lat:lat,lon:lon,nome:nome};
 var MODULOS_PRO=["clima","aeronaves","campo"], proDestino="clima";
 function proAtivo(){try{return localStorage.getItem("dronouPro")==="1"}catch(e){return false}}
 function desbloquearPro(){var cod=(document.getElementById("pCodigo").value||"").trim().toUpperCase(),msg=document.getElementById("pMsg");
- if(!cod){msg.className="result show bad";msg.innerHTML="<strong>Digite seu código.</strong> Ele chega pelo WhatsApp depois do pagamento.";return}
+ if(!cod){msg.className="result show bad";msg.innerHTML="<strong>Digite seu código.</strong> Ele chega pelo Telegram depois do pagamento.";return}
  function ok(h){if(h===CONFIG.PRO_HASH){try{localStorage.setItem("dronouPro","1")}catch(e){}msg.className="result show";msg.innerHTML="<strong>🎉 PRO liberado!</strong> Abrindo sua ferramenta…";setTimeout(function(){abrirModulo(proDestino)},700)}
- else{msg.className="result show bad";msg.innerHTML="<strong>Código não reconhecido.</strong> Confira a digitação (com os tracinhos) ou peça um novo pelo WhatsApp."}}
+ else{msg.className="result show bad";msg.innerHTML="<strong>Código não reconhecido.</strong> Confira a digitação (com os tracinhos) ou peça um novo pelo Telegram."}}
  if(window.crypto&&crypto.subtle&&crypto.subtle.digest){crypto.subtle.digest("SHA-256",new TextEncoder().encode(cod)).then(function(b){ok(Array.prototype.map.call(new Uint8Array(b),function(x){return ("0"+x.toString(16)).slice(-2)}).join(""))}).catch(function(){ok("")})}
  else{ok("")}}
 function abrirModulo(id,rolar){
