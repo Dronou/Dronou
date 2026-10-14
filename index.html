@@ -608,9 +608,9 @@ function erroClima(){var s=document.getElementById("climaStatus");s.className="r
 function carregarClima(lat,lon,nome){ultimoLocal={lat:lat,lon:lon,nome:nome};
  var s=document.getElementById("climaStatus");s.className="result show";s.innerHTML="⏳ Carregando condições em <strong>"+nome+"</strong>…";
  var url="https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=temperature_2m,relative_humidity_2m,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation&hourly=wind_speed_10m,wind_gusts_10m,precipitation_probability,visibility&daily=sunrise,sunset&timezone=auto&forecast_days=2";
- Promise.all([fetch(url).then(function(r){return r.json()}),fetch("https://services.swpc.noaa.gov/json/planetary_k_index_1m.json").then(function(r){return r.json()}).catch(function(){return null})]).then(function(par){
-  var j=par[0],kpArr=par[1],c=j.current,h=j.hourly;
-  var kp=null,kpHora="";if(kpArr&&kpArr.length){var u=kpArr[kpArr.length-1];kp=(u.estimated_kp!==undefined?u.estimated_kp:(u.Kp!==undefined?u.Kp:u.kp));if(u.time_tag){var _d=new Date(u.time_tag.replace(" ","T")+"Z");if(!isNaN(_d))kpHora=_d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}}
+ Promise.all([fetch(url).then(function(r){return r.json()}),fetch("https://services.swpc.noaa.gov/json/planetary_k_index_1m.json").then(function(r){return r.json()}).catch(function(){return null}),fetch("https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json").then(function(r){return r.json()}).catch(function(){return null})]).then(function(par){
+  var j=par[0],kpArr=par[1],kp3Arr=par[2],c=j.current,h=j.hourly;
+  var kp=null,kpEst=null,kpHora="";if(kpArr&&kpArr.length){var ue=kpArr[kpArr.length-1];kpEst=(ue.estimated_kp!==undefined?ue.estimated_kp:ue.kp_index)}if(kp3Arr&&kp3Arr.length){var u=kp3Arr[kp3Arr.length-1];kp=(u.Kp!==undefined?u.Kp:null);if(u.time_tag){var _i=new Date(u.time_tag.replace(" ","T")+"Z"),_f=new Date(_i.getTime()+3*3600*1000);if(!isNaN(_i))kpHora=" • bloco "+_i.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"–"+_f.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+" (horário local)"}}if(kp===null)kp=kpEst;var kpVeredito=Math.max(kp||0,kpEst||0);
   var idx=0;for(var i=0;i<h.time.length;i++){if(h.time[i]<=c.time)idx=i;else break}
   var chuva=Math.max.apply(null,h.precipitation_probability.slice(idx,idx+4).map(function(v){return v||0}));
   var visKm=(h.visibility[idx]||0)/1000;
@@ -623,7 +623,7 @@ function carregarClima(lat,lon,nome){ultimoLocal={lat:lat,lon:lon,nome:nome};
   document.getElementById("cVis").textContent=(visKm>=10?">10":visKm.toFixed(1).replace(".",","))+" km";
   document.getElementById("cNuvem").textContent=Math.round(c.cloud_cover)+"%";
   document.getElementById("cKp").textContent=(kp===null?"—":(+kp).toFixed(1).replace(".",","));
-  document.getElementById("cKpTxt").textContent=kp===null?"indisponível":((kp<=3?"GPS/bússola tranquilos":kp<5?"cautela com GPS":"risco ao GPS/bússola")+(kpHora?" • NOAA às "+kpHora+" (horário local)":""));
+  document.getElementById("cKpTxt").textContent=kp===null?"indisponível":((kp<=3?"GPS/bússola tranquilos":kp<5?"cautela com GPS":"risco ao GPS/bússola")+(kpEst!==null&&kpEst!==undefined?" • tempo real est. "+(+kpEst).toFixed(1).replace(".",","):"")+kpHora);
   document.getElementById("cSol").textContent=j.daily.sunrise[0].slice(11,16)+" → "+j.daily.sunset[0].slice(11,16);
   var nota=100,avisos=[];
   function pen(v,faixas){for(var k=0;k<faixas.length;k++){if(v>faixas[k][0]){nota-=faixas[k][1];avisos.push(faixas[k][2]);return}}}
@@ -631,7 +631,7 @@ function carregarClima(lat,lon,nome){ultimoLocal={lat:lat,lon:lon,nome:nome};
   pen(c.wind_gusts_10m,[[55,70,"rajadas severas"],[40,40,"rajadas fortes"],[25,20,"rajadas merecem atenção"]]);
   pen(chuva,[[50,60,"chuva provável nas próximas horas"],[30,35,"risco de chuva"],[10,15,"pequena chance de chuva"]]);
   pen(-visKm,[[-2,50,"visibilidade muito baixa"],[-5,30,"visibilidade reduzida"],[-10,10,"visibilidade moderada"]]);
-  if(kp!==null)pen(kp,[[5,60,"KP alto: GPS e bússola podem falhar"],[4,35,"KP elevado: cautela com GPS"],[3,0,""]]);
+  if(kp!==null)pen(kpVeredito,[[5,60,"KP alto: GPS e bússola podem falhar"],[4,35,"KP elevado: cautela com GPS"],[3,0,""]]);
   avisos=avisos.filter(function(a){return a});
   var titulo,cls="result show";
   if(nota>=75)titulo="🟢 Bom para voar";
