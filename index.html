@@ -608,9 +608,15 @@ function erroClima(){var s=document.getElementById("climaStatus");s.className="r
 function carregarClima(lat,lon,nome){ultimoLocal={lat:lat,lon:lon,nome:nome};
  var s=document.getElementById("climaStatus");s.className="result show";s.innerHTML="⏳ Carregando condições em <strong>"+nome+"</strong>…";
  var url="https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=temperature_2m,relative_humidity_2m,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation&hourly=wind_speed_10m,wind_gusts_10m,precipitation_probability,visibility&daily=sunrise,sunset&timezone=auto&forecast_days=2";
- Promise.all([fetch(url).then(function(r){return r.json()}),fetch("https://services.swpc.noaa.gov/json/planetary_k_index_1m.json").then(function(r){return r.json()}).catch(function(){return null}),fetch("https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json").then(function(r){return r.json()}).catch(function(){return null})]).then(function(par){
-  var j=par[0],kpArr=par[1],kp3Arr=par[2],c=j.current,h=j.hourly;
-  var kp=null,kpEst=null,kpHora="";if(kpArr&&kpArr.length){var ue=kpArr[kpArr.length-1];kpEst=(ue.estimated_kp!==undefined?ue.estimated_kp:ue.kp_index)}if(kp3Arr&&kp3Arr.length){var u=kp3Arr[kp3Arr.length-1];kp=(u.Kp!==undefined?u.Kp:null);if(u.time_tag){var _i=new Date(u.time_tag.replace(" ","T")+"Z"),_f=new Date(_i.getTime()+3*3600*1000);if(!isNaN(_i))kpHora=" • bloco "+_i.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"–"+_f.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+" (horário local)"}}if(kp===null)kp=kpEst;var kpVeredito=Math.max(kp||0,kpEst||0);
+ Promise.all([fetch(url).then(function(r){return r.json()}),fetch("https://services.swpc.noaa.gov/json/planetary_k_index_1m.json").then(function(r){return r.json()}).catch(function(){return null}),fetch("https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json").then(function(r){return r.json()}).catch(function(){return null}),fetch("https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt").then(function(r){return r.text()}).catch(function(){return null})]).then(function(par){
+  var j=par[0],kpArr=par[1],kp3Arr=par[2],kpTxt=par[3],c=j.current,h=j.hourly;
+  var kpPrev=null;if(kpTxt){try{var linhas=kpTxt.split("\n"),ini=-1;for(var z=0;z<linhas.length;z++){if(linhas[z].indexOf("NOAA Kp index forecast")>-1){ini=z;break}}
+   if(ini>-1){var meses={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11},agora=new Date(),mesU=agora.getUTCMonth(),diaU=agora.getUTCDate(),bloco=Math.floor(agora.getUTCHours()/3)*3;
+   var cab=(linhas[ini+1].match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2})/g)||[]),col=-1;
+   for(var cc=0;cc<cab.length;cc++){var mm=cab[cc].match(/(\w{3})\s+(\d{1,2})/);if(mm&&meses[mm[1]]===mesU&&+mm[2]===diaU)col=cc}
+   if(col>-1){for(var rr=ini+2;rr<linhas.length;rr++){var m2=linhas[rr].match(/^(\d{2})-\d{2}UT\s+(.+)/);if(!m2)continue;if(+m2[1]===bloco){var vals=m2[2].trim().split(/\s+/);kpPrev=parseFloat(vals[col]);break}}}}}catch(e){}}
+  var kp=null,kpEst=null,kpHora="";if(kpArr&&kpArr.length){var ue=kpArr[kpArr.length-1];kpEst=(ue.estimated_kp!==undefined?ue.estimated_kp:ue.kp_index)}if(kp3Arr&&kp3Arr.length){var u=kp3Arr[kp3Arr.length-1];kp=(u.Kp!==undefined?u.Kp:null);if(u.time_tag){var _i=new Date(u.time_tag.replace(" ","T")+"Z"),_f=new Date(_i.getTime()+3*3600*1000);if(!isNaN(_i))kpHora=" • bloco "+_i.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"–"+_f.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+" (horário local)"}}if(kpPrev!==null&&!isNaN(kpPrev)){kp=kpPrev;var _ag=new Date(),_b=Math.floor(_ag.getUTCHours()/3)*3,_pi=new Date(Date.UTC(_ag.getUTCFullYear(),_ag.getUTCMonth(),_ag.getUTCDate(),_b)),_pf=new Date(_pi.getTime()+3*3600*1000);kpHora=" • previsão bloco "+_pi.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"–"+_pf.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+" (horário local)"}
+  if(kp===null)kp=kpEst;var kpVeredito=Math.max(kp||0,kpEst||0);
   var idx=0;for(var i=0;i<h.time.length;i++){if(h.time[i]<=c.time)idx=i;else break}
   var chuva=Math.max.apply(null,h.precipitation_probability.slice(idx,idx+4).map(function(v){return v||0}));
   var visKm=(h.visibility[idx]||0)/1000;
@@ -623,7 +629,7 @@ function carregarClima(lat,lon,nome){ultimoLocal={lat:lat,lon:lon,nome:nome};
   document.getElementById("cVis").textContent=(visKm>=10?">10":visKm.toFixed(1).replace(".",","))+" km";
   document.getElementById("cNuvem").textContent=Math.round(c.cloud_cover)+"%";
   document.getElementById("cKp").textContent=(kp===null?"—":(+kp).toFixed(1).replace(".",","));
-  document.getElementById("cKpTxt").textContent=kp===null?"indisponível":((kp<=3?"GPS/bússola tranquilos":kp<5?"cautela com GPS":"risco ao GPS/bússola")+(kpEst!==null&&kpEst!==undefined?" • tempo real est. "+(+kpEst).toFixed(1).replace(".",","):"")+kpHora);
+  document.getElementById("cKpTxt").textContent=kp===null?"indisponível":((kp<=3?"GPS/bússola tranquilos":kp<5?"cautela com GPS":"risco ao GPS/bússola")+(kpEst!==null&&kpEst!==undefined?" • agora est. "+(+kpEst).toFixed(1).replace(".",","):"")+kpHora);
   document.getElementById("cSol").textContent=j.daily.sunrise[0].slice(11,16)+" → "+j.daily.sunset[0].slice(11,16);
   var nota=100,avisos=[];
   function pen(v,faixas){for(var k=0;k<faixas.length;k++){if(v>faixas[k][0]){nota-=faixas[k][1];avisos.push(faixas[k][2]);return}}}
