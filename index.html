@@ -116,6 +116,44 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 .wxcard span{font-size:12px;color:var(--mut);display:block}
 .wxcard b{font-size:23px;display:block;margin:3px 0}
 .wxcard small{color:var(--mut)}
+
+/* ===== VISUAL PROFISSIONAL DRONOU ===== */
+:root{--verde:#0d4f57;--escuro:#0a1114;--azul:#0d2b33;--fundo:#edf2f3;--texto:#132025;--mut:#5b6f74;--linha:#d5dfe1}
+body{background:radial-gradient(1100px 500px at 85% -5%,rgba(47,216,210,.10),transparent 60%),var(--fundo)}
+h1,h2,h3{letter-spacing:-.02em;color:var(--escuro)}
+h2{font-size:clamp(23px,3vw,30px)}
+section{border-radius:20px;padding:clamp(18px,3vw,30px);box-shadow:0 10px 30px rgba(10,25,30,.07);border-color:#dde6e8}
+.card{border-radius:16px;padding:19px;box-shadow:0 3px 14px rgba(10,25,30,.05);transition:transform .18s ease,box-shadow .18s ease}
+.card:hover{transform:translateY(-3px);box-shadow:0 14px 28px rgba(10,25,30,.10)}
+.card.preco{background:linear-gradient(180deg,#ffffff,#f2fbfa);border:2px solid rgba(47,216,210,.65)}
+.card.destaque{position:relative;border:2px solid var(--ciano);box-shadow:0 18px 38px rgba(47,216,210,.20)}
+.selo-pop{position:absolute;top:-13px;right:16px;background:var(--ciano);color:#06323a;font-weight:900;font-size:11px;letter-spacing:.6px;border-radius:999px;padding:5px 11px;box-shadow:0 6px 16px rgba(47,216,210,.45)}
+.btn{border-radius:12px;border:1px solid transparent;background:linear-gradient(135deg,#0f5a63,#0a3d44);box-shadow:0 8px 18px rgba(10,50,56,.20);padding:12px 18px}
+.btn:hover{filter:brightness(1.10);box-shadow:0 12px 24px rgba(10,50,56,.24)}
+.btn.amarelo{background:linear-gradient(135deg,#54e6df,#22c9c2);color:#06323a!important;box-shadow:0 8px 18px rgba(47,216,210,.35)}
+.btn.sec{background:#fff;color:var(--verde)!important;border-color:#bcd2d4;box-shadow:none}
+input,select,textarea{border-radius:12px;border-color:#b9cdd0;background:#fbfdfd}
+input:focus,select:focus,textarea:focus{outline:3px solid rgba(47,216,210,.35);border-color:var(--ciano)}
+header.hero{background:radial-gradient(800px 320px at 75% -10%,rgba(47,216,210,.22),transparent 62%),linear-gradient(135deg,#191919 0%,#12262b 58%,#0c3038 100%);border-bottom:3px solid rgba(47,216,210,.55);padding:30px 0 28px}
+.hero h1{font-size:clamp(30px,4.6vw,44px);text-shadow:0 2px 18px rgba(0,0,0,.25)}
+.confianca{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.confianca span{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.07);color:#dff7f3;border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0}
+.stat{background:linear-gradient(180deg,#0f2227,#0c181c);color:#eafffb;border-radius:16px;padding:16px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--ciano)}
+.stat span{font-size:12.5px;color:#bfe6e1}
+.passo{background:#f7fafa;border:1px solid var(--linha);border-radius:16px;padding:18px}
+.passo .n{width:38px;height:38px;border-radius:12px;background:var(--ciano);color:#06323a;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:9px}
+table th{background:#0d2b33;color:#eafffb}
+.side-btn{border-radius:12px}
+.side-btn.ativo{background:linear-gradient(135deg,#54e6df,#22c9c2);color:#06323a;box-shadow:0 8px 20px rgba(47,216,210,.28)}
+footer{background:linear-gradient(180deg,#0b1417,#08100f);padding:38px 0 26px}
+footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:22px}
+footer h4{color:#fff;margin:0 0 9px;font-size:15px}
+footer a{display:block;color:#9fd8d2;font-weight:600;margin:5px 0;text-decoration:none}
+footer a:hover{color:#fff}
+footer .marca{color:#fff;font-size:19px}
+@media(max-width:700px){.stat b{font-size:22px}}
 </style>
 </head>
 <body>
@@ -140,6 +178,7 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 <p class="lead">ANATEL, SISANT e SARPAS NG sem travar: trilhas clicáveis, simuladores para treinar sem medo de errar e simulado da prova ANAC. <strong>Grátis.</strong></p>
 <span class="badge">100% GRATUITO • RBAC 100 + ICA 100-40/2026 • ATUALIZADO EM 13/10/2026</span>
 <p class="no-print"><button class="btn amarelo" onclick="abrirModulo('jornada')">Começar agora →</button><button class="btn sec" onclick="abrirModulo('ajuda')">Diagnóstico gratuito</button></p>
+<div class="confianca"><span>✔ Fontes oficiais: ANAC • DECEA • ANATEL</span><span>✔ Sem cadastro para começar</span><span>✔ Feito para celular</span><span>✔ Atualizado com RBAC 100 e ICA 100-40/2026</span></div>
 </div></header>
 
 <nav class="no-print"><div class="wrap">
@@ -180,6 +219,25 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 <div class="card preco"><div class="ico">🌦️</div><h3>Clima de voo <span class="protag">PRO</span></h3><p>Vento, rajadas, chuva e índice KP antes de decolar — mais Minhas Aeronaves e o checklist “Vou voar agora”.</p><button class="btn" onclick="abrirModulo('clima')">Ver o clima →</button></div>
 <div class="card preco"><div class="ico">💬</div><h3>Diagnóstico gratuito</h3><p>Contou modelo, uso e onde travou — um especialista devolve o mapa do que falta.</p><button class="btn amarelo" style="color:#241a00!important" onclick="abrirModulo('ajuda')">Pedir diagnóstico →</button></div>
 </div>
+<div class="stats">
+<div class="stat"><b>3</b><span>trilhas oficiais guiadas</span></div>
+<div class="stat"><b>4</b><span>simuladores de treino</span></div>
+<div class="stat"><b>20</b><span>questões no simulado ANAC</span></div>
+<div class="stat"><b>KP</b><span>clima e geomagnético ao vivo</span></div>
+<div class="stat"><b>100%</b><span>fontes oficiais do governo</span></div>
+</div>
+<h3 style="margin-top:22px">Como funciona</h3>
+<div class="grid g3">
+<div class="passo"><div class="n">1</div><h3 style="margin:0 0 6px">Regularize</h3><p class="small" style="margin:0">Siga as trilhas ANATEL → SISANT → SARPAS NG, etapa por etapa, sem travar nos sistemas.</p></div>
+<div class="passo"><div class="n">2</div><h3 style="margin:0 0 6px">Treine</h3><p class="small" style="margin:0">Simuladores e simulado ANAC para chegar ao sistema oficial sabendo exatamente o que fazer.</p></div>
+<div class="passo"><div class="n">3</div><h3 style="margin:0 0 6px">Voe legal</h3><p class="small" style="margin:0">Clima, checklist de campo e seus documentos em ordem — decolar vira só a parte boa.</p></div>
+</div>
+<div class="card destaque" style="margin-top:16px"><div class="selo-pop">PLANOS</div><h3 style="margin-top:0">Free para começar. Pro e Advanced para voar como profissional.</h3><p>O essencial é <strong>grátis para sempre</strong>. Quem voa toda semana usa o <strong>Pro</strong> (clima/KP, frota e checklist) e o <strong>Advanced</strong> (tudo + atualizações futuras incluídas).</p><p class="no-print"><button class="btn" onclick="abrirModulo('pro')">Ver planos e preços →</button><button class="btn sec" onclick="abrirModulo('clima')">Testar o clima de voo →</button></p></div>
+<h3 style="margin-top:22px">Perguntas frequentes</h3>
+<details><summary>O DRONOU é da ANAC, do DECEA ou da ANATEL?</summary><p class="small">Não. É uma plataforma educacional independente que ensina o caminho oficial e linka direto para os sistemas do governo. Quem aprova voo, cadastro e homologação são os órgãos.</p></details>
+<details><summary>O que continua grátis?</summary><p class="small">As trilhas completas, os simuladores de treino, o simulado ANAC, o “Posso voar?” e os guias. Os planos pagos liberam as ferramentas de campo: clima/KP, frota salva, checklist avançado e novidades.</p></details>
+<details><summary>Como pago e recebo o acesso?</summary><p class="small">Pelo nosso Telegram oficial, via Pix. Você recebe um código pessoal, ativa em segundos aqui no site e usa por 365 dias neste aparelho/navegador.</p></details>
+<details><summary>Preciso instalar aplicativo?</summary><p class="small">Não. Funciona no navegador do celular e do computador. Suas aeronaves, favoritos e registros ficam salvos só no seu aparelho.</p></details>
 <div class="alert" style="margin-top:16px"><strong>Compromisso DRONOU:</strong> aqui ninguém aprende atalho para burlar regra. Você aprende o caminho oficial — <strong>ANATEL → ANAC/SISANT → DECEA/SARPAS NG</strong> — treinando antes de mexer no sistema de verdade. Simuladores não enviam dados e não substituem os sistemas oficiais.</div>
 </section>
 
@@ -293,7 +351,7 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 <div class="grid g3">
 <div class="card"><div class="ico">🆓</div><h3>Free</h3><p><strong>Para sair do zero:</strong></p><p>🧭 Trilhas ANATEL • SISANT • SARPAS NG<br>🧪 Simuladores SISANT e SARPAS<br>🎓 Simulado ANAC (20 questões)<br>🚦 “Posso voar?” e guias em PDF</p><span class="tag">GRÁTIS PARA SEMPRE</span></div>
 <div class="card preco"><div class="ico">⭐</div><h3>Pro</h3><p><strong>Free + ferramentas de campo:</strong></p><p>🌦️ Clima de voo completo (vento, rajadas, chuva, visibilidade e KP)<br>🚁 Minhas aeronaves (até 3 salvas)<br>✅ “Vou voar agora”: checklist e ficha de missão imprimíveis</p><span class="tag">R$ 29,90/ANO VIA PIX</span></div>
-<div class="card preco"><div class="ico">🚀</div><h3>Advanced</h3><p><strong>Pro + tudo que vier:</strong></p><p>♾️ Aeronaves ilimitadas e ⭐ locais favoritos no Clima<br>📓 Diário de bordo dos seus voos<br>🔄 <strong>Todas as atualizações e ferramentas futuras incluídas</strong>, sem pagar de novo<br>⚡ Atendimento prioritário no Telegram</p><span class="tag">R$ 49,90/ANO VIA PIX — SÓ R$ 20 A MAIS QUE O PRO</span></div>
+<div class="card preco destaque"><div class="selo-pop">MAIS POPULAR</div><div class="ico">🚀</div><h3>Advanced</h3><p><strong>Pro + tudo que vier:</strong></p><p>♾️ Aeronaves ilimitadas e ⭐ locais favoritos no Clima<br>📓 Diário de bordo dos seus voos<br>🔄 <strong>Todas as atualizações e ferramentas futuras incluídas</strong>, sem pagar de novo<br>⚡ Atendimento prioritário no Telegram</p><span class="tag">R$ 49,90/ANO VIA PIX — SÓ R$ 20 A MAIS QUE O PRO</span></div>
 </div>
 <p class="small" id="planoAtualTxt"></p>
 <div class="alert" style="margin-top:14px"><strong>Como funciona:</strong> assinatura anual via Pix combinada pelo Telegram → você recebe seu <strong>código de acesso</strong> → digita abaixo uma vez e o plano fica liberado neste aparelho/navegador por <strong>365 dias</strong> (renovação pelo Telegram, sem renovação automática escondida).</div>
@@ -429,7 +487,12 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 </div>
 </section>
 
-<footer><div class="wrap"><strong>DRONOU</strong> — Do cadastro ao voo autorizado, sem erro.<br><span class="small">Emergências: 190 • 192 • 193 — Na dúvida, não decoce. Material educacional (13/10/2026). Confira sempre ANAC, DECEA e ANATEL.</span></div></footer>
+<footer><div class="wrap"><div class="cols">
+<div><div class="marca">DRONOU</div><p class="small" style="color:#b7d8d2">Do cadastro ao voo autorizado, sem erro. Plataforma educacional independente para pilotos de drone no Brasil.</p><p class="small" style="color:#8fb8b1">Emergências: 190 • 192 • 193<br>Na dúvida, não decoce.</p></div>
+<div><h4>Plataforma</h4><a href="#jornada" onclick="abrirModulo('jornada');return false">Regularizar meu drone</a><a href="#simuladores" onclick="abrirModulo('simuladores');return false">Simuladores</a><a href="#quiz" onclick="abrirModulo('quiz');return false">Simulado ANAC</a><a href="#clima" onclick="abrirModulo('clima');return false">Clima de voo</a><a href="#pro" onclick="abrirModulo('pro');return false">Planos e preços</a></div>
+<div><h4>Sistemas oficiais</h4><a href="https://santosdumont.anac.gov.br/menu/f?p=133" target="_blank" rel="noopener">SISANT — ANAC</a><a href="https://servicos.decea.mil.br/sarpas/" target="_blank" rel="noopener">SARPAS — DECEA</a><a href="https://capacitacao.anac.gov.br/course/view.php?id=4426" target="_blank" rel="noopener">Prova teórica — ANAC</a><a href="https://sei.anatel.gov.br" target="_blank" rel="noopener">SEI — ANATEL</a></div>
+<div><h4>Suporte</h4><a href="https://t.me/dronoubr" target="_blank" rel="noopener">Telegram oficial @dronoubr</a><a href="#ajuda" onclick="abrirModulo('ajuda');return false">Diagnóstico gratuito</a><a href="#materiais" onclick="abrirModulo('materiais');return false">Materiais e guias</a></div>
+</div><p class="small" style="color:#7ea8a1;border-top:1px solid rgba(255,255,255,.14);margin-top:20px;padding-top:14px">DRONOU © 2026 — Material educacional, sem vínculo com ANAC, DECEA, ANATEL ou MAPA. Normas mudam: em conflito, vale a norma e o sistema oficial.</p></div></footer>
 <button id="btnTopo" class="no-print" aria-label="Voltar ao topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 <div class="barra-celular no-print"><a href="#jornada">🧭<br>Jornada</a><a href="#simuladores">🧪<br>Simular</a><a href="#quiz">🎓<br>Prova</a><a href="#clima">🌦️<br>Clima</a><a href="#posso">🚦<br>Posso voar?</a><a href="#ajuda">💬<br>Ajuda</a></div>
 
