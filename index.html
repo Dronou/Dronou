@@ -412,7 +412,9 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 <script>
 /* ========= CONFIG DO DONO — edite aqui antes de divulgar =========
    Link do Telegram (canal/grupo/atendimento), ex.: "https://t.me/dronoubr". */
-var CONFIG = { TELEGRAM_LINK: "https://t.me/dronoubr", ADV_HASH: "b0b568322be3445674bd08b20f89e8ab86c7f343feca8387d54922fd8fa6953f", PRO_HASH: "4a696912996baa183c3b4c7ee9ca5b75ba9c912e10b00cb82c8cad9510267c65" };
+var CONFIG = { TELEGRAM_LINK: "https://t.me/dronoubr",
+  ADV_HASHES: ["b0b568322be3445674bd08b20f89e8ab86c7f343feca8387d54922fd8fa6953f"],
+  PRO_HASHES: ["4a696912996baa183c3b4c7ee9ca5b75ba9c912e10b00cb82c8cad9510267c65"] };  /* cole aqui os hashes gerados na ferramenta do dono; cada cliente, um codigo */
 
 /* ============ TRILHAS ============ */
 var TRILHAS = {
@@ -679,7 +681,7 @@ function advAtivo(){return planoAtual()==="adv"}
 function atualizarPlanoUI(){var pl=planoAtual(),txt=document.getElementById("planoAtualTxt");if(txt){var exp="";try{var e=+localStorage.getItem("dronouPlanoExpira")||0;if(e)exp=" (válido até "+new Date(e).toLocaleDateString("pt-BR")+")"}catch(_e){}txt.innerHTML=pl==="free"?"Você está no plano <strong>Free</strong>.":(pl==="pro"?"Seu plano atual: <strong>Pro</strong> ⭐"+exp+" — quer tudo que for lançado? Faça upgrade para o Advanced pelo Telegram.":"Seu plano atual: <strong>Advanced</strong> 🚀"+exp+" — tudo liberado, incluindo as próximas atualizações.")}var fz=document.getElementById("favZona");if(fz)fz.style.display=advAtivo()?"block":"none";var ft=document.getElementById("favTeaser");if(ft)ft.style.display=advAtivo()?"none":"block";var dz=document.getElementById("diarioZona");if(dz)dz.style.display=advAtivo()?"block":"none";var dt=document.getElementById("diarioTeaser");if(dt)dt.style.display=advAtivo()?"none":"block"}
 function desbloquearPro(){var cod=(document.getElementById("pCodigo").value||"").trim().toUpperCase(),msg=document.getElementById("pMsg");
  if(!cod){msg.className="result show bad";msg.innerHTML="<strong>Digite seu código.</strong> Ele chega pelo Telegram depois do pagamento.";return}
- function ok(h){var pl=h===CONFIG.ADV_HASH?"adv":(h===CONFIG.PRO_HASH?"pro":null);
+ function ok(h){var pl=(CONFIG.ADV_HASHES.indexOf(h)>-1)?"adv":((CONFIG.PRO_HASHES.indexOf(h)>-1)?"pro":null);
   if(pl){try{localStorage.setItem("dronouPlano",pl);localStorage.setItem("dronouPro","1");localStorage.setItem("dronouPlanoExpira",String(Date.now()+365*24*3600*1000))}catch(e){}atualizarPlanoUI();msg.className="result show";msg.innerHTML="<strong>🎉 Plano "+(pl==="adv"?"Advanced 🚀":"Pro ⭐")+" liberado!</strong> Abrindo sua ferramenta…";setTimeout(function(){abrirModulo(proDestino)},700)}
  else{msg.className="result show bad";msg.innerHTML="<strong>Código não reconhecido.</strong> Confira a digitação (com os tracinhos) ou peça um novo pelo Telegram."}}
  if(window.crypto&&crypto.subtle&&crypto.subtle.digest){crypto.subtle.digest("SHA-256",new TextEncoder().encode(cod)).then(function(b){ok(Array.prototype.map.call(new Uint8Array(b),function(x){return ("0"+x.toString(16)).slice(-2)}).join(""))}).catch(function(){ok("")})}
