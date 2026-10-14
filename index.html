@@ -108,6 +108,14 @@ header.hero{text-align:center}
 header.hero .wrap{display:flex;flex-direction:column;align-items:center}
 header.hero h1{margin-left:auto;margin-right:auto}
 header.hero .lead{margin-left:auto;margin-right:auto}
+
+/* ===== DRONOU PRO + Clima de voo ===== */
+.protag{background:#2fd8d2;color:#06323a;border-radius:999px;font-size:10px;padding:2px 7px;font-weight:900;vertical-align:2px;letter-spacing:.4px}
+.wx{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0}
+.wxcard{background:#fff;border:1px solid var(--linha);border-radius:14px;padding:14px;text-align:center}
+.wxcard span{font-size:12px;color:var(--mut);display:block}
+.wxcard b{font-size:23px;display:block;margin:3px 0}
+.wxcard small{color:var(--mut)}
 </style>
 </head>
 <body>
@@ -117,10 +125,11 @@ header.hero .lead{margin-left:auto;margin-right:auto}
   <button class="side-btn ativo" data-modulo="inicio" onclick="abrirModulo('inicio')">🏠 Início</button>
   <button class="side-btn" data-modulo="jornada" onclick="abrirModulo('jornada')">🧭 Regularizar</button>
   <button class="side-btn" data-modulo="simuladores" onclick="abrirModulo('simuladores')">🧪 Simuladores</button>
+  <button class="side-btn" data-modulo="clima" onclick="abrirModulo('clima')">🌦️ Clima de voo <span class="protag">PRO</span></button>
   <button class="side-btn" data-modulo="quiz" onclick="abrirModulo('quiz')">🎓 Prova ANAC</button>
   <button class="side-btn" data-modulo="posso" onclick="abrirModulo('posso')">🚦 Posso voar?</button>
-  <button class="side-btn" data-modulo="aeronaves" onclick="abrirModulo('aeronaves')">🚁 Minhas aeronaves</button>
-  <button class="side-btn" data-modulo="campo" onclick="abrirModulo('campo')">✅ Vou voar agora</button>
+  <button class="side-btn" data-modulo="aeronaves" onclick="abrirModulo('aeronaves')">🚁 Minhas aeronaves <span class="protag">PRO</span></button>
+  <button class="side-btn" data-modulo="campo" onclick="abrirModulo('campo')">✅ Vou voar agora <span class="protag">PRO</span></button>
   <button class="side-btn" data-modulo="materiais" onclick="abrirModulo('materiais')">📥 Materiais</button>
   <button class="side-btn" data-modulo="ajuda" onclick="abrirModulo('ajuda')">💬 Ajuda gratuita</button>
   <div class="side-cta"><p><strong style="color:#fff">Travou em alguma etapa?</strong><br>Diagnóstico gratuito, sem compromisso.</p><button class="btn amarelo" style="color:#241a00!important;width:100%;margin:0" onclick="abrirModulo('ajuda')">Pedir ajuda</button></div>
@@ -167,6 +176,7 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 <div class="grid g3" style="margin-top:14px">
 <div class="card"><div class="ico">🎓</div><h3>Destaque: prova ANAC</h3><p id="contagem2027">Calculando prazo…</p><p>Treine no simulado de 20 questões antes de fazer a oficial gratuita.</p><button class="btn" onclick="abrirModulo('quiz')">Treinar agora →</button></div>
 <div class="card"><div class="ico">🚁</div><h3>Minha frota</h3><p id="resumoFrota">Nenhuma aeronave salva ainda.</p><button class="btn" onclick="abrirModulo('aeronaves')">Ver minhas aeronaves →</button></div>
+<div class="card preco"><div class="ico">🌦️</div><h3>Clima de voo <span class="protag">PRO</span></h3><p>Vento, rajadas, chuva e índice KP antes de decolar — mais Minhas Aeronaves e o checklist “Vou voar agora”.</p><button class="btn" onclick="abrirModulo('clima')">Ver o clima →</button></div>
 <div class="card preco"><div class="ico">💬</div><h3>Diagnóstico gratuito</h3><p>Contou modelo, uso e onde travou — um especialista devolve o mapa do que falta.</p><button class="btn amarelo" style="color:#241a00!important" onclick="abrirModulo('ajuda')">Pedir diagnóstico →</button></div>
 </div>
 <div class="alert" style="margin-top:16px"><strong>Compromisso DRONOU:</strong> aqui ninguém aprende atalho para burlar regra. Você aprende o caminho oficial — <strong>ANATEL → ANAC/SISANT → DECEA/SARPAS NG</strong> — treinando antes de mexer no sistema de verdade. Simuladores não enviam dados e não substituem os sistemas oficiais.</div>
@@ -247,6 +257,46 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 </div>
 </div>
 <div id="resSarpas" class="result"></div>
+</section>
+
+
+<!-- Clima DE VOO (PRO) -->
+<section id="clima" class="modulo"><h2>🌦️ Clima de voo — dá para decolar?</h2>
+<p class="sub">Estilo UAV Forecast: vento, rajadas, chuva, visibilidade e <strong>índice KP</strong> (atividade geomagnética que afeta GPS/bússola) no local do voo. Fontes: Open-Meteo e NOAA/SWPC, atualizado a cada consulta. Não substitui SARPAS, ARO nem o seu julgamento.</p>
+<div class="grid g2">
+<div><label>Cidade do voo</label><input id="cBusca" placeholder="Ex.: Ubatuba-SP, São Paulo, Curitiba">
+<div class="no-print" style="margin-top:8px"><button class="btn" onclick="buscarCidade()">🔎 Buscar cidade</button><button class="btn sec" onclick="usarGPS()">📍 Usar minha localização</button></div></div>
+<div><div class="alert blue"><strong>Como ler:</strong> vento sustentado e rajada mandam no controle do drone; KP até 3 é tranquilo, 4 pede cautela e 5+ pode degradar GPS e bússola — adie voos de precisão.</div></div>
+</div>
+<div id="climaStatus" class="result"></div>
+<div class="wx">
+<div class="wxcard"><span>🌡️ Temperatura</span><b id="cTemp">—</b><small id="cCond">—</small></div>
+<div class="wxcard"><span>💨 Vento</span><b id="cVento">—</b><small id="cVentoDir">—</small></div>
+<div class="wxcard"><span>🌬️ Rajadas</span><b id="cRajada">—</b><small>pico do vento</small></div>
+<div class="wxcard"><span>🌧️ Chuva (próx. horas)</span><b id="cChuva">—</b><small>probabilidade</small></div>
+<div class="wxcard"><span>👀 Visibilidade</span><b id="cVis">—</b><small>alcance visual</small></div>
+<div class="wxcard"><span>☁️ Nuvens</span><b id="cNuvem">—</b><small>cobertura</small></div>
+<div class="wxcard"><span>🧲 Índice KP</span><b id="cKp">—</b><small id="cKpTxt">geomagnético</small></div>
+<div class="wxcard"><span>🌅 Sol</span><b id="cSol">—</b><small>nascer → pôr do sol</small></div>
+</div>
+<h3>Próximas horas</h3>
+<div id="cHoras" style="overflow-x:auto"><p class="small">Busque uma cidade ou use sua localização para carregar a previsão.</p></div>
+<p class="small" id="cFonte">Limites de referência variam por modelo: mini drones sofrem com vento bem antes de drones maiores. Confira o manual do seu equipamento.</p>
+</section>
+
+<!-- DRONOU PRO -->
+<section id="pro" class="modulo"><h2>🔒 DRONOU PRO</h2>
+<p class="sub">As trilhas, o simulado ANAC e o “Posso voar?” continuam <strong>grátis para sempre</strong>. O PRO libera as ferramentas de campo que você usa em todo voo:</p>
+<div class="grid g3">
+<div class="card"><div class="ico">🌦️</div><h3>Clima de voo</h3><p>Vento, rajadas, chuva, visibilidade e índice KP do local, estilo UAV Forecast.</p></div>
+<div class="card"><div class="ico">🚁</div><h3>Minhas aeronaves</h3><p>Sua frota salva no aparelho, pronta para reutilizar nos simuladores e fichas.</p></div>
+<div class="card"><div class="ico">✅</div><h3>Vou voar agora</h3><p>Checklist de campo completo, do pré-voo à emergência, pronto para imprimir.</p></div>
+</div>
+<div class="alert" style="margin-top:14px"><strong>Como funciona:</strong> pagamento único via Pix combinado pelo WhatsApp → você recebe seu <strong>código de acesso</strong> → digita abaixo uma vez e o PRO fica liberado neste aparelho/navegador.</div>
+<label>Já tem seu código? Digite aqui</label>
+<input id="pCodigo" placeholder="Ex.: DRONOU-PRO-XXXX" style="max-width:420px;text-transform:uppercase">
+<p class="no-print"><button class="btn" onclick="desbloquearPro()">🔓 Desbloquear PRO</button><button class="btn amarelo" style="color:#241a00!important" onclick="abrirModulo('ajuda')">💬 Quero o PRO — falar no WhatsApp</button></p>
+<div id="pMsg" class="result"></div>
 </section>
 
 <!-- QUIZ -->
@@ -349,12 +399,12 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 </main>
 <footer><div class="wrap"><strong>DRONOU</strong> — Do cadastro ao voo autorizado, sem erro.<br><span class="small">Emergências: 190 • 192 • 193 — Na dúvida, não decoce. Material educacional (13/10/2026). Confira sempre ANAC, DECEA e ANATEL.</span></div></footer>
 <button id="btnTopo" class="no-print" aria-label="Voltar ao topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-<div class="barra-celular no-print"><a href="#jornada">🧭<br>Jornada</a><a href="#simuladores">🧪<br>Simular</a><a href="#quiz">🎓<br>Prova</a><a href="#posso">🚦<br>Posso voar?</a><a href="#ajuda">💬<br>Ajuda</a></div>
+<div class="barra-celular no-print"><a href="#jornada">🧭<br>Jornada</a><a href="#simuladores">🧪<br>Simular</a><a href="#quiz">🎓<br>Prova</a><a href="#clima">🌦️<br>Clima</a><a href="#posso">🚦<br>Posso voar?</a><a href="#ajuda">💬<br>Ajuda</a></div>
 
 <script>
 /* ========= CONFIG DO DONO — edite aqui antes de divulgar =========
    Coloque seu WhatsApp com DDI+DDD, ex.: "5511999999999". Vazio = botão oculto. */
-var CONFIG = { WHATSAPP_DONO: "" };
+var CONFIG = { WHATSAPP_DONO: "", PRO_HASH: "4a696912996baa183c3b4c7ee9ca5b75ba9c912e10b00cb82c8cad9510267c65" };
 
 /* ============ TRILHAS ============ */
 var TRILHAS = {
@@ -542,14 +592,75 @@ function atualizarContagem(){var el=document.getElementById("contagem2027");if(!
  el.innerHTML=dias>0?("Faltam <strong>"+dias+" dias</strong> para a prova teórica passar a ser cobrada de quem opera sob o RBAC 100 (01/01/2027)."):"A prova teórica da ANAC <strong>já está sendo cobrada</strong> para quem opera sob o RBAC 100."}
 atualizarProg();atualizarContagem();
 
+
+/* ============ Clima DE VOO ============ */
+var climaIniciado=false, ultimoLocal=null;
+function iniciarClima(){if(climaIniciado)return;climaIniciado=true;carregarClima(-23.5505,-46.6333,"São Paulo, SP (padrão — busque sua cidade)")}
+function cardinal(g){var d=["N","NE","L","SE","S","SO","O","NO"];return d[Math.round(g/45)%8]}
+function condicao(c){if(c===0)return"Céu limpo";if(c<=3)return"Nublado";if(c===45||c===48)return"Nevoeiro";if(c>=51&&c<=57)return"Garoa";if(c>=61&&c<=67)return"Chuva";if(c>=71&&c<=77)return"Neve";if(c>=80&&c<=82)return"Pancadas";if(c>=95)return"Tempestade";return"Código "+c}
+function buscarCidade(){var q=(document.getElementById("cBusca").value||"").trim();if(!q){return}
+ fetch("https://geocoding-api.open-meteo.com/v1/search?name="+encodeURIComponent(q)+"&count=1&language=pt&format=json").then(function(r){return r.json()}).then(function(j){
+  if(!j.results||!j.results.length){document.getElementById("climaStatus").className="result show bad";document.getElementById("climaStatus").innerHTML="<strong>Cidade não encontrada.</strong> Tente “Cidade-UF”.";return}
+  var c=j.results[0];carregarClima(c.latitude,c.longitude,c.name+(c.admin1?" • "+c.admin1:""))}).catch(function(){erroClima()})}
+function usarGPS(){if(!navigator.geolocation){erroClima();return}
+ navigator.geolocation.getCurrentPosition(function(pos){carregarClima(pos.coords.latitude,pos.coords.longitude,"📍 Sua localização")},function(){document.getElementById("climaStatus").className="result show bad";document.getElementById("climaStatus").innerHTML="<strong>Localização não autorizada.</strong> Busque a cidade pelo nome."},{timeout:10000})}
+function erroClima(){var s=document.getElementById("climaStatus");s.className="result show bad";s.innerHTML="<strong>Não consegui carregar a previsão agora.</strong> Confira a internet e tente de novo."}
+function carregarClima(lat,lon,nome){ultimoLocal={lat:lat,lon:lon,nome:nome};
+ var s=document.getElementById("climaStatus");s.className="result show";s.innerHTML="⏳ Carregando condições em <strong>"+nome+"</strong>…";
+ var url="https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=temperature_2m,relative_humidity_2m,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation&hourly=wind_speed_10m,wind_gusts_10m,precipitation_probability,visibility&daily=sunrise,sunset&timezone=auto&forecast_days=2";
+ Promise.all([fetch(url).then(function(r){return r.json()}),fetch("https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json").then(function(r){return r.json()}).catch(function(){return null})]).then(function(par){
+  var j=par[0],kpArr=par[1],c=j.current,h=j.hourly;
+  var kp=null;if(kpArr&&kpArr.length){var u=kpArr[kpArr.length-1];kp=(u.Kp!==undefined?u.Kp:u.kp)}
+  var idx=0;for(var i=0;i<h.time.length;i++){if(h.time[i]<=c.time)idx=i;else break}
+  var chuva=Math.max.apply(null,h.precipitation_probability.slice(idx,idx+4).map(function(v){return v||0}));
+  var visKm=(h.visibility[idx]||0)/1000;
+  document.getElementById("cTemp").textContent=Math.round(c.temperature_2m)+" °C";
+  document.getElementById("cCond").textContent=condicao(c.weather_code)+" • umidade "+Math.round(c.relative_humidity_2m)+"%";
+  document.getElementById("cVento").textContent=Math.round(c.wind_speed_10m)+" km/h";
+  document.getElementById("cVentoDir").textContent=cardinal(c.wind_direction_10m)+" ("+Math.round(c.wind_direction_10m)+"°)";
+  document.getElementById("cRajada").textContent=Math.round(c.wind_gusts_10m)+" km/h";
+  document.getElementById("cChuva").textContent=chuva+"%";
+  document.getElementById("cVis").textContent=(visKm>=10?">10":visKm.toFixed(1).replace(".",","))+" km";
+  document.getElementById("cNuvem").textContent=Math.round(c.cloud_cover)+"%";
+  document.getElementById("cKp").textContent=(kp===null?"—":(+kp).toFixed(1).replace(".",","));
+  document.getElementById("cKpTxt").textContent=kp===null?"indisponível":(kp<=3?"GPS/bússola tranquilos":kp<5?"cautela com GPS":"risco ao GPS/bússola");
+  document.getElementById("cSol").textContent=j.daily.sunrise[0].slice(11,16)+" → "+j.daily.sunset[0].slice(11,16);
+  var nota=100,avisos=[];
+  function pen(v,faixas){for(var k=0;k<faixas.length;k++){if(v>faixas[k][0]){nota-=faixas[k][1];avisos.push(faixas[k][2]);return}}}
+  pen(c.wind_speed_10m,[[35,60,"vento forte demais para a maioria dos drones"],[25,35,"vento forte: só drones robustos e piloto experiente"],[15,15,"vento moderado: atenção em mini drones"]]);
+  pen(c.wind_gusts_10m,[[55,70,"rajadas severas"],[40,40,"rajadas fortes"],[25,20,"rajadas merecem atenção"]]);
+  pen(chuva,[[50,60,"chuva provável nas próximas horas"],[30,35,"risco de chuva"],[10,15,"pequena chance de chuva"]]);
+  pen(-visKm,[[-2,50,"visibilidade muito baixa"],[-5,30,"visibilidade reduzida"],[-10,10,"visibilidade moderada"]]);
+  if(kp!==null)pen(kp,[[5,60,"KP alto: GPS e bússola podem falhar"],[4,35,"KP elevado: cautela com GPS"],[3,0,""]]);
+  avisos=avisos.filter(function(a){return a});
+  var titulo,cls="result show";
+  if(nota>=75)titulo="🟢 Bom para voar";
+  else if(nota>=45){titulo="🟡 Voe com cautela";cls+=" bad"}
+  else{titulo="🔴 Não recomendado agora";cls+=" stop"}
+  s.className=cls;
+  s.innerHTML="<h3 style='margin-top:0'>"+titulo+" — "+nome+"</h3><p>Índice de condições: <strong>"+Math.max(0,nota)+"/100</strong>"+(avisos.length?" • "+avisos.join("; "):" • vento, chuva, visibilidade e KP dentro do tranquilo para a maioria dos modelos")+".</p><p class='small'>Mesmo com clima bom: SISANT, SARPAS favorável e permissão do local continuam obrigatórios. Atualizado agora ("+c.time.replace("T"," ")+").</p>";
+  var linhas="";for(var m=idx;m<Math.min(idx+12,h.time.length);m++){linhas+="<tr><td>"+h.time[m].slice(11,16)+"</td><td>"+Math.round(h.wind_speed_10m[m])+" km/h</td><td>"+Math.round(h.wind_gusts_10m[m])+" km/h</td><td>"+(h.precipitation_probability[m]||0)+"%</td><td>"+((h.visibility[m]||0)/1000).toFixed(1).replace(".",",")+" km</td></tr>"}
+  document.getElementById("cHoras").innerHTML="<table><tr><th>Hora</th><th>Vento</th><th>Rajadas</th><th>Chuva</th><th>Visib.</th></tr>"+linhas+"</table>";
+ }).catch(function(){erroClima()})}
+
 /* ============ NAVEGAÇÃO POR BOTÕES (tela limpa) ============ */
+var MODULOS_PRO=["clima","aeronaves","campo"], proDestino="clima";
+function proAtivo(){try{return localStorage.getItem("dronouPro")==="1"}catch(e){return false}}
+function desbloquearPro(){var cod=(document.getElementById("pCodigo").value||"").trim().toUpperCase(),msg=document.getElementById("pMsg");
+ if(!cod){msg.className="result show bad";msg.innerHTML="<strong>Digite seu código.</strong> Ele chega pelo WhatsApp depois do pagamento.";return}
+ function ok(h){if(h===CONFIG.PRO_HASH){try{localStorage.setItem("dronouPro","1")}catch(e){}msg.className="result show";msg.innerHTML="<strong>🎉 PRO liberado!</strong> Abrindo sua ferramenta…";setTimeout(function(){abrirModulo(proDestino)},700)}
+ else{msg.className="result show bad";msg.innerHTML="<strong>Código não reconhecido.</strong> Confira a digitação (com os tracinhos) ou peça um novo pelo WhatsApp."}}
+ if(window.crypto&&crypto.subtle&&crypto.subtle.digest){crypto.subtle.digest("SHA-256",new TextEncoder().encode(cod)).then(function(b){ok(Array.prototype.map.call(new Uint8Array(b),function(x){return ("0"+x.toString(16)).slice(-2)}).join(""))}).catch(function(){ok("")})}
+ else{ok("")}}
 function abrirModulo(id,rolar){
+  if(MODULOS_PRO.indexOf(id)>-1&&!proAtivo()){proDestino=id;id="pro"}
   var alvo=document.getElementById(id);
   if(!alvo||!alvo.classList.contains("modulo")){return}
   document.querySelectorAll(".modulo").forEach(function(m){m.classList.toggle("ativo",m===alvo)});
   alvo.classList.add("visivel");if(id==="inicio"){atualizarResumoFrota();atualizarContagem()}
   document.querySelectorAll("nav a, .barra-celular a").forEach(function(a){a.classList.toggle("ativo",a.getAttribute("href")==="#"+id)});document.querySelectorAll("[data-modulo]").forEach(function(b){b.classList.toggle("ativo",b.dataset.modulo===id)});
   try{history.replaceState(null,"","#"+id)}catch(e){}
+  if(id==="clima"&&typeof iniciarClima==="function"){iniciarClima()}
   if(rolar!==false){var y=alvo.getBoundingClientRect().top+window.scrollY-78;window.scrollTo({top:Math.max(0,y),behavior:"smooth"})}
 }
 document.querySelectorAll("a[href^='#']").forEach(function(a){
