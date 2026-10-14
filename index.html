@@ -268,6 +268,8 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 <div class="no-print" style="margin-top:8px"><button class="btn" onclick="buscarCidade()">🔎 Buscar cidade</button><button class="btn sec" onclick="usarGPS()">📍 Usar minha localização</button></div></div>
 <div><div class="alert blue"><strong>Como ler:</strong> vento sustentado e rajada mandam no controle do drone; KP até 3 é tranquilo, 4 pede cautela e 5+ pode degradar GPS e bússola — adie voos de precisão.</div></div>
 </div>
+<div id="favZona" style="display:none;margin-top:10px"><h3>⭐ Meus locais favoritos <span class="protag">ADVANCED</span></h3><div id="favChips"></div><p class="no-print"><button class="btn sec" onclick="salvarFav()">⭐ Salvar o local exibido agora</button></p></div>
+<div id="favTeaser" class="alert" style="margin-top:10px">⭐ <strong>Advanced:</strong> salve seus locais de voo favoritos e abra o clima deles com um toque. <button class="btn sec" onclick="abrirModulo('pro')">Ver o Advanced →</button></div>
 <div id="climaStatus" class="result"></div>
 <div class="wx">
 <div class="wxcard"><span>🌡️ Temperatura</span><b id="cTemp">—</b><small id="cCond">—</small></div>
@@ -285,14 +287,15 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 </section>
 
 <!-- DRONOU PRO -->
-<section id="pro" class="modulo"><h2>🔒 DRONOU PRO</h2>
-<p class="sub">As trilhas, o simulado ANAC e o “Posso voar?” continuam <strong>grátis para sempre</strong>. O PRO libera as ferramentas de campo que você usa em todo voo:</p>
+<section id="pro" class="modulo"><h2>💎 Planos DRONOU — Free, Pro e Advanced</h2>
+<p class="sub">As trilhas, o simulado ANAC e o “Posso voar?” continuam <strong>grátis para sempre</strong>. Os planos pagos liberam as ferramentas de campo que você usa em todo voo:</p>
 <div class="grid g3">
-<div class="card"><div class="ico">🌦️</div><h3>Clima de voo</h3><p>Vento, rajadas, chuva, visibilidade e índice KP do local, estilo UAV Forecast.</p></div>
-<div class="card"><div class="ico">🚁</div><h3>Minhas aeronaves</h3><p>Sua frota salva no aparelho, pronta para reutilizar nos simuladores e fichas.</p></div>
-<div class="card"><div class="ico">✅</div><h3>Vou voar agora</h3><p>Checklist de campo completo, do pré-voo à emergência, pronto para imprimir.</p></div>
+<div class="card"><div class="ico">🆓</div><h3>Free</h3><p><strong>Para sair do zero:</strong></p><p>🧭 Trilhas ANATEL • SISANT • SARPAS NG<br>🧪 Simuladores SISANT e SARPAS<br>🎓 Simulado ANAC (20 questões)<br>🚦 “Posso voar?” e guias em PDF</p><span class="tag">GRÁTIS PARA SEMPRE</span></div>
+<div class="card preco"><div class="ico">⭐</div><h3>Pro</h3><p><strong>Free + ferramentas de campo:</strong></p><p>🌦️ Clima de voo completo (vento, rajadas, chuva, visibilidade e KP)<br>🚁 Minhas aeronaves (até 3 salvas)<br>✅ “Vou voar agora”: checklist e ficha de missão imprimíveis</p><span class="tag">R$ 29,90/ANO VIA PIX</span></div>
+<div class="card preco"><div class="ico">🚀</div><h3>Advanced</h3><p><strong>Pro + tudo que vier:</strong></p><p>♾️ Aeronaves ilimitadas e ⭐ locais favoritos no Clima<br>📓 Diário de bordo dos seus voos<br>🔄 <strong>Todas as atualizações e ferramentas futuras incluídas</strong>, sem pagar de novo<br>⚡ Atendimento prioritário no Telegram</p><span class="tag">R$ 49,90/ANO VIA PIX — SÓ R$ 20 A MAIS QUE O PRO</span></div>
 </div>
-<div class="alert" style="margin-top:14px"><strong>Como funciona:</strong> pagamento único via Pix combinado pelo Telegram → você recebe seu <strong>código de acesso</strong> → digita abaixo uma vez e o PRO fica liberado neste aparelho/navegador.</div>
+<p class="small" id="planoAtualTxt"></p>
+<div class="alert" style="margin-top:14px"><strong>Como funciona:</strong> assinatura anual via Pix combinada pelo Telegram → você recebe seu <strong>código de acesso</strong> → digita abaixo uma vez e o plano fica liberado neste aparelho/navegador por <strong>365 dias</strong> (renovação pelo Telegram, sem renovação automática escondida).</div>
 <label>Já tem seu código? Digite aqui</label>
 <input id="pCodigo" placeholder="Ex.: DRONOU-PRO-XXXX" style="max-width:420px;text-transform:uppercase">
 <p class="no-print"><button class="btn" onclick="desbloquearPro()">🔓 Desbloquear PRO</button><a class="btn amarelo" style="color:#241a00!important" href="https://t.me/dronoubr" target="_blank" rel="noopener">✈️ Quero o PRO — falar no Telegram</a></p>
@@ -357,6 +360,10 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 </div>
 <p class="no-print"><button class="btn" onclick="gerarFicha()">Gerar ficha</button><button class="btn sec" onclick="window.print()">Imprimir / salvar PDF</button></p>
 <div id="fichaCampo" class="doc">A ficha aparecerá aqui…</div>
+<div id="diarioZona" style="display:none"><h3>📓 Diário de bordo <span class="protag">ADVANCED</span></h3>
+<div class="grid g2"><div><label>Data e local do voo</label><input id="dQuando" placeholder="Ex.: 14/10 — Fazenda Boa Vista"></div><div><label>Duração / observação</label><input id="dObs" placeholder="Ex.: 18 min — voo ok, vento fraco"></div></div>
+<p class="no-print"><button class="btn" onclick="registrarVoo()">Registrar voo</button></p><div id="listaVoos"></div></div>
+<div id="diarioTeaser" class="alert">📓 <strong>Advanced:</strong> registre seus voos num diário de bordo salvo no aparelho — histórico que vale ouro para trabalho e seguro. <button class="btn sec" onclick="abrirModulo('pro')">Ver o Advanced →</button></div>
 </section>
 
 <!-- MATERIAIS -->
@@ -404,7 +411,7 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 <script>
 /* ========= CONFIG DO DONO — edite aqui antes de divulgar =========
    Link do Telegram (canal/grupo/atendimento), ex.: "https://t.me/dronoubr". */
-var CONFIG = { TELEGRAM_LINK: "https://t.me/dronoubr", PRO_HASH: "4a696912996baa183c3b4c7ee9ca5b75ba9c912e10b00cb82c8cad9510267c65" };
+var CONFIG = { TELEGRAM_LINK: "https://t.me/dronoubr", ADV_HASH: "b0b568322be3445674bd08b20f89e8ab86c7f343feca8387d54922fd8fa6953f", PRO_HASH: "4a696912996baa183c3b4c7ee9ca5b75ba9c912e10b00cb82c8cad9510267c65" };
 
 /* ============ TRILHAS ============ */
 var TRILHAS = {
@@ -544,7 +551,7 @@ function salvarFrota(f){try{localStorage.setItem("voelegal_frota",JSON.stringify
 function renderFrota(){atualizarResumoFrota();var f=frota(),box=document.getElementById("listaAeronaves");
  if(!f.length){box.innerHTML="<p class='small'>Nenhuma aeronave salva ainda. Cadastre a primeira acima.</p>";return}
  box.innerHTML="<table><tr><th>Modelo</th><th>Peso</th><th>SISANT</th><th>ANATEL</th><th>Status</th><th></th></tr>"+f.map(function(a,i){return "<tr><td>"+a.modelo+"<br><span class='small'>Série: "+a.serie+"</span></td><td>"+a.peso+" g</td><td>"+a.codigo+"</td><td>"+a.anatel+"</td><td>"+a.status+"</td><td><button class='btn sec' onclick='usarAeronave("+i+")'>Usar no SARPAS</button> <button class='btn sec' onclick='removerAeronave("+i+")'>Remover</button></td></tr>"}).join("")+"</table>"}
-function salvarAeronave(){var a={modelo:document.getElementById("fModelo").value.trim()||"Drone sem nome",peso:document.getElementById("fPeso").value||"—",codigo:document.getElementById("fCodigo").value.trim()||"—",serie:document.getElementById("fSerie").value.trim()||"—",anatel:document.getElementById("fAnatel").value,status:document.getElementById("fStatus").value};var f=frota();f.push(a);salvarFrota(f);renderFrota()}
+function salvarAeronave(){if(!advAtivo()&&frota().length>=3){alert("Plano Pro: até 3 aeronaves salvas. No Advanced a frota é ilimitada 😉");abrirModulo("pro");return}var a={modelo:document.getElementById("fModelo").value.trim()||"Drone sem nome",peso:document.getElementById("fPeso").value||"—",codigo:document.getElementById("fCodigo").value.trim()||"—",serie:document.getElementById("fSerie").value.trim()||"—",anatel:document.getElementById("fAnatel").value,status:document.getElementById("fStatus").value};var f=frota();f.push(a);salvarFrota(f);renderFrota()}
 function removerAeronave(i){var f=frota();f.splice(i,1);salvarFrota(f);renderFrota()}
 function usarAeronave(i){var a=frota()[i];if(a){document.getElementById("vDrone").value=a.modelo+" — "+a.codigo;abrirModulo("simuladores")}}
 function exportarFrota(){var f=frota();var t="MINHA FROTA — DRONOU\n"+f.map(function(a){return a.modelo+" | "+a.peso+" g | SISANT "+a.codigo+" | Série "+a.serie+" | "+a.anatel+" | "+a.status}).join("\n");var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/plain;charset=utf-8"}));a.download="minha-frota-voelegal.txt";a.click();URL.revokeObjectURL(a.href)}
@@ -557,6 +564,20 @@ campoBoxes.forEach(function(b){b.addEventListener("change",atualizarCampo)});
 try{var sv=JSON.parse(localStorage.getItem("voelegal_campo")||"[]");campoBoxes.forEach(function(b,i){if(sv[i])b.checked=true})}catch(e){}
 atualizarCampo();
 function gerarFicha(){var l=document.getElementById("mLocal").value||"—",s=document.getElementById("mSarpas").value||"—";document.getElementById("fichaCampo").textContent="FICHA DE VOO — DRONOU\nMissão/local: "+l+"\nData/janela/SARPAS: "+s+"\nPré-voo: documentos OK • clima OK • 30 m de terceiros • RTH/home OK • bateria/link OK\nEmergência: aeronave tripulada = pousar e encerrar • 190/192/193\nDecisão: [ ] VOO AUTORIZADO  [ ] VOO CANCELADO — motivo: __________"}
+
+
+/* ============ ADVANCED: favoritos do clima + diário de bordo ============ */
+function favs(){try{return JSON.parse(localStorage.getItem("dronouFavs")||"[]")}catch(e){return[]}}
+function renderFavs(){var box=document.getElementById("favChips");if(!box)return;var f=favs();
+ box.innerHTML=f.length?f.map(function(x,i){return "<button class='btn sec' onclick='carregarClima("+x.lat+","+x.lon+",\""+x.nome.replace(/"/g,"")+"\")'>⭐ "+x.nome+"</button> <button class='btn sec' onclick='removerFav("+i+")' title='Remover'>✕</button> "}).join(""):"<p class='small'>Nenhum local favorito ainda. Carregue uma cidade e toque em salvar.</p>"}
+function salvarFav(){if(!advAtivo()){abrirModulo("pro");return}if(!ultimoLocal){return}var f=favs();f.push(ultimoLocal);try{localStorage.setItem("dronouFavs",JSON.stringify(f))}catch(e){}renderFavs()}
+function removerFav(i){var f=favs();f.splice(i,1);try{localStorage.setItem("dronouFavs",JSON.stringify(f))}catch(e){}renderFavs()}
+function voos(){try{return JSON.parse(localStorage.getItem("dronouVoos")||"[]")}catch(e){return[]}}
+function renderVoos(){var box=document.getElementById("listaVoos");if(!box)return;var v=voos();
+ box.innerHTML=v.length?("<table><tr><th>Voo</th><th>Detalhes</th><th></th></tr>"+v.map(function(x,i){return "<tr><td>"+x.q+"</td><td>"+x.o+"</td><td><button class='btn sec' onclick='removerVoo("+i+")'>Remover</button></td></tr>"}).join("")+"</table>"):"<p class='small'>Nenhum voo registrado ainda.</p>"}
+function registrarVoo(){var q=document.getElementById("dQuando").value.trim(),o=document.getElementById("dObs").value.trim();if(!q)return;var v=voos();v.push({q:q,o:o||"—"});try{localStorage.setItem("dronouVoos",JSON.stringify(v))}catch(e){}renderVoos()}
+function removerVoo(i){var v=voos();v.splice(i,1);try{localStorage.setItem("dronouVoos",JSON.stringify(v))}catch(e){}renderVoos()}
+renderFavs();renderVoos();atualizarPlanoUI();
 
 /* ============ LEADS ============ */
 function enviarLead(ev){ev.preventDefault();var lead={nome:document.getElementById("lNome").value.trim(),whats:document.getElementById("lWhats").value.trim(),drone:document.getElementById("lDrone").value.trim(),perfil:document.getElementById("lPerfil").value,dificuldade:document.getElementById("lDificuldade").value,msg:document.getElementById("lMsg").value.trim(),quando:new Date().toLocaleString("pt-BR")};
@@ -652,9 +673,13 @@ function carregarClima(lat,lon,nome){ultimoLocal={lat:lat,lon:lon,nome:nome};
 /* ============ NAVEGAÇÃO POR BOTÕES (tela limpa) ============ */
 var MODULOS_PRO=["clima","aeronaves","campo"], proDestino="clima";
 function proAtivo(){try{return localStorage.getItem("dronouPro")==="1"}catch(e){return false}}
+function planoAtual(){try{var pl=localStorage.getItem("dronouPlano");if(pl==="adv"||pl==="pro"){var exp=+localStorage.getItem("dronouPlanoExpira")||0;if(exp&&Date.now()>exp)return "free";return pl}if(localStorage.getItem("dronouPro")==="1")return "pro"}catch(e){}return "free"}
+function advAtivo(){return planoAtual()==="adv"}
+function atualizarPlanoUI(){var pl=planoAtual(),txt=document.getElementById("planoAtualTxt");if(txt){var exp="";try{var e=+localStorage.getItem("dronouPlanoExpira")||0;if(e)exp=" (válido até "+new Date(e).toLocaleDateString("pt-BR")+")"}catch(_e){}txt.innerHTML=pl==="free"?"Você está no plano <strong>Free</strong>.":(pl==="pro"?"Seu plano atual: <strong>Pro</strong> ⭐"+exp+" — quer tudo que for lançado? Faça upgrade para o Advanced pelo Telegram.":"Seu plano atual: <strong>Advanced</strong> 🚀"+exp+" — tudo liberado, incluindo as próximas atualizações.")}var fz=document.getElementById("favZona");if(fz)fz.style.display=advAtivo()?"block":"none";var ft=document.getElementById("favTeaser");if(ft)ft.style.display=advAtivo()?"none":"block";var dz=document.getElementById("diarioZona");if(dz)dz.style.display=advAtivo()?"block":"none";var dt=document.getElementById("diarioTeaser");if(dt)dt.style.display=advAtivo()?"none":"block"}
 function desbloquearPro(){var cod=(document.getElementById("pCodigo").value||"").trim().toUpperCase(),msg=document.getElementById("pMsg");
  if(!cod){msg.className="result show bad";msg.innerHTML="<strong>Digite seu código.</strong> Ele chega pelo Telegram depois do pagamento.";return}
- function ok(h){if(h===CONFIG.PRO_HASH){try{localStorage.setItem("dronouPro","1")}catch(e){}msg.className="result show";msg.innerHTML="<strong>🎉 PRO liberado!</strong> Abrindo sua ferramenta…";setTimeout(function(){abrirModulo(proDestino)},700)}
+ function ok(h){var pl=h===CONFIG.ADV_HASH?"adv":(h===CONFIG.PRO_HASH?"pro":null);
+  if(pl){try{localStorage.setItem("dronouPlano",pl);localStorage.setItem("dronouPro","1");localStorage.setItem("dronouPlanoExpira",String(Date.now()+365*24*3600*1000))}catch(e){}atualizarPlanoUI();msg.className="result show";msg.innerHTML="<strong>🎉 Plano "+(pl==="adv"?"Advanced 🚀":"Pro ⭐")+" liberado!</strong> Abrindo sua ferramenta…";setTimeout(function(){abrirModulo(proDestino)},700)}
  else{msg.className="result show bad";msg.innerHTML="<strong>Código não reconhecido.</strong> Confira a digitação (com os tracinhos) ou peça um novo pelo Telegram."}}
  if(window.crypto&&crypto.subtle&&crypto.subtle.digest){crypto.subtle.digest("SHA-256",new TextEncoder().encode(cod)).then(function(b){ok(Array.prototype.map.call(new Uint8Array(b),function(x){return ("0"+x.toString(16)).slice(-2)}).join(""))}).catch(function(){ok("")})}
  else{ok("")}}
