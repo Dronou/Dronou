@@ -522,6 +522,7 @@ footer .marca{color:#fff;font-size:19px}
 </div>
 <p class="no-print"><button class="btn" onclick="gerarCodigosAdmin()">🔑 Gerar códigos</button><button class="btn sec" onclick="copiarHashesAdmin()">Copiar hashes do último lote</button><button class="btn sec" onclick="exportarAdmin()">⬇️ Exportar controle (CSV)</button><button class="btn sec" onclick="sairAdmin()">Sair</button></p>
 <div id="admLote" class="result"></div>
+<div id="admVisitas" class="alert blue" style="margin:10px 0">📊 <strong>Visitas:</strong> contador ainda não configurado (veja a instrução no aviso desta página).</div>
 <div id="admStats" style="margin:10px 0"></div>
 <div id="admTabela" style="overflow-x:auto"></div>
 <div class="alert" style="margin-top:14px"><strong>Para um código valer no site:</strong> gere o lote → copie os <strong>hashes</strong> → cole em <code>CONFIG.PRO_HASHES</code> ou <code>CONFIG.ADV_HASHES</code> no index.html → suba o arquivo no GitHub. Gere em lotes (ex.: 10 de cada) para não precisar subir toda hora. Para <strong>revogar</strong>, apague o hash dele da lista e suba de novo.</div>
@@ -540,7 +541,7 @@ footer .marca{color:#fff;font-size:19px}
 <script>
 /* ========= CONFIG DO DONO — edite aqui antes de divulgar =========
    Link do Telegram (canal/grupo/atendimento), ex.: "https://t.me/dronoubr". */
-var CONFIG = { ADMIN_HASH: "a2bde2bfa7886f266caa675c97f2c178795e0fa394ce9e55321a01d3d78fec74", TELEGRAM_LINK: "https://t.me/dronoubr",
+var CONFIG = { GOATCOUNTER: "dronou", ADMIN_HASH: "a2bde2bfa7886f266caa675c97f2c178795e0fa394ce9e55321a01d3d78fec74", TELEGRAM_LINK: "https://t.me/dronoubr",
   ADV_HASHES: ["b0b568322be3445674bd08b20f89e8ab86c7f343feca8387d54922fd8fa6953f", "02e7efa1e1be8161a3396d20f7bf554e076de6f8414eeb8225a67215cc289a86", "ac0aaf302e042085772a92d657b3bf1327dad93185f363c011f97e7f83581e3c", "cd1de36e45ca5ebe3977cf9841fe1e12bafe13ca0f99f3db1249fc50f707d901", "32b95f333ec4943d060b1877da8ee8e968164521927ef0d3ae86054de059ce5a", "eaa40148afe12c83b1fde8f8db7dbbe89232075013c4d5461d67a21be1b31485", "4ba39c86d2f755e5a599d866df6e517ce9eb8d295a4360cfc4b66db6e002a4c4", "1da57e9dadace9c5b122bc93a1747c675135966fd434e8805e643a357bd64ea9", "d839015490a283ba5af14e4481d65dd5bd100e27c054a53120101e28ab71846b", "4e471318799cc02be6c12e912898ce750aeabfc1fc5e2fa1504606ea00dfd0d1", "25e4d3d2cc1923d5c2b9cb1675f3775ca3508ad95a53e18a62c0a52dcc5d2336"],
   PRO_HASHES: ["4a696912996baa183c3b4c7ee9ca5b75ba9c912e10b00cb82c8cad9510267c65", "c9e11394d70bb5a7223eeab890d386d8558739bba032b6f8ec6ad7e6cc7f1566", "bd4e3d2f52366114c08302942ed10afe0e3c4a55daebc99be0218146ec885a09", "89456f9b286e223badca9d974bceab1a95d0faf2b89b0b56236288ff55f11b18", "300f09cb85184cd056dd064bea673e53ef2e85d0160874b14d689306ccb35faf", "9d8b7e614bd6652e58abac987206c848edf2175f47c0a236cae43a453178ec82", "d540a3b4cfd9396cd645733e9a8997214662f5baf3ac8f8dfa07764112623afb", "891d246b75c4259e9878f7b7e117acefac120bd755cd16f02e2aa07b63a58f2e", "ea3c8e2daea8f1db398ded68ffa715e6e831f49ea08bc9e92382f8757ba107e0", "bd75a4859644eb88d8eaa1cf4e46f6c43d9af7f717bfd857b2560b640ff2d5e5", "d2158f9b882732958111ca7a3f0762dc1589a0c84cbb551d0c4ceba7a73b5a4d"] };  /* cole aqui os hashes gerados na ferramenta do dono; cada cliente, um codigo */
 
@@ -802,13 +803,22 @@ function carregarClima(lat,lon,nome){ultimoLocal={lat:lat,lon:lon,nome:nome};
  }).catch(function(){erroClima()})}
 
 
+
+/* ============ CONTADOR DE VISITAS (GoatCounter) ============ */
+if(CONFIG.GOATCOUNTER){var _gc=document.createElement("script");_gc.async=true;_gc.src="//gc.zgo.at/count.js";_gc.setAttribute("data-goatcounter","https://"+CONFIG.GOATCOUNTER+".goatcounter.com/count");document.head.appendChild(_gc)}
+function carregarVisitas(){var box=document.getElementById("admVisitas");if(!box)return;
+ if(!CONFIG.GOATCOUNTER){box.innerHTML="📊 <strong>Visitas:</strong> crie a conta grátis em <strong>goatcounter.com</strong>, escolha seu código (ex.: <code>dronou</code>) e coloque em <code>CONFIG.GOATCOUNTER</code> no index.html. Aí o total aparece aqui e o painel completo fica em <code>seucodigo.goatcounter.com</code>.";return}
+ fetch("https://"+CONFIG.GOATCOUNTER+".goatcounter.com/counter/TOTAL.json").then(function(r){return r.json()}).then(function(j){
+  box.innerHTML="📊 <strong>Visitas totais:</strong> "+(j.count||j.count_unique||"—")+" &nbsp;•&nbsp; <a href='https://"+CONFIG.GOATCOUNTER+".goatcounter.com' target='_blank' rel='noopener'>Abrir painel completo (páginas, origem, dias) ↗</a>"}).catch(function(){
+  box.innerHTML="📊 <strong>Visitas:</strong> ative “Allow using the visitor counter” nas configurações do GoatCounter para ver o total aqui — ou <a href='https://"+CONFIG.GOATCOUNTER+".goatcounter.com' target='_blank' rel='noopener'>abra o painel ↗</a>"})}
+
 /* ============ ÁREA DO DONO ============ */
 function sha256hex(txt){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(txt)).then(function(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return ("0"+x.toString(16)).slice(-2)}).join("")})}
 function adminOk(){try{return sessionStorage.getItem("dronouAdmin")==="1"}catch(e){return false}}
 function entrarAdmin(){var v=(document.getElementById("admSenha").value||"").trim().toUpperCase(),m=document.getElementById("admMsg");
  sha256hex(v).then(function(h){if(h===CONFIG.ADMIN_HASH){try{sessionStorage.setItem("dronouAdmin","1")}catch(e){}mostrarAdmin()}
  else{m.className="result show bad";m.innerHTML="<strong>Código de dono não reconhecido.</strong>"}})}
-function mostrarAdmin(){if(!adminOk())return;document.getElementById("adminTrava").style.display="none";document.getElementById("adminPainel").style.display="block";renderAdmin()}
+function mostrarAdmin(){if(!adminOk())return;carregarVisitas();document.getElementById("adminTrava").style.display="none";document.getElementById("adminPainel").style.display="block";renderAdmin()}
 function sairAdmin(){try{sessionStorage.removeItem("dronouAdmin")}catch(e){}document.getElementById("adminPainel").style.display="none";document.getElementById("adminTrava").style.display="block";abrirModulo("inicio")}
 function regAdmin(){try{return JSON.parse(localStorage.getItem("dronouAdminCodigos")||"[]")}catch(e){return[]}}
 function salvarRegAdmin(r){try{localStorage.setItem("dronouAdminCodigos",JSON.stringify(r))}catch(e){}}
