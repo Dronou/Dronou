@@ -1222,9 +1222,9 @@ async function admSbAccessToken(){var s=admSbSessao();if(!s||!s.access_token)ret
 async function adminEnviarLinkTrial(){var input=document.getElementById("admTrialEmail"),email=input?(input.value||"").trim().toLowerCase():"";if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){admTrialStatus("<strong>Digite o e-mail de dono autorizado</strong> para receber o link de acesso.",true);return}
  try{localStorage.setItem("dronouAdminLoginPendente",String(Date.now()));localStorage.setItem("dronouAdminEmailPendente",email)}catch(e){}
  admTrialStatus("Enviando link seguro para <strong>"+escJanela(email)+"</strong>…");
- try{await admSbFetch("/auth/v1/otp",{method:"POST",body:JSON.stringify({email:email,should_create_user:true,email_redirect_to:"https://dronou.com.br/#admin"})},null);admTrialStatus("<strong>✉️ Link enviado.</strong> Abra o e-mail do Supabase e toque em <strong>Sign in</strong>. Você voltará à Área do Dono; se ela pedir o código de dono, digite normalmente.")}
+ try{await admSbFetch("/auth/v1/otp",{method:"POST",body:JSON.stringify({email:email,should_create_user:true,email_redirect_to:"https://dronou.com.br/?dronouAdmin=1"})},null);admTrialStatus("<strong>✉️ Link enviado.</strong> Abra o e-mail do Supabase e toque em <strong>Sign in</strong>. Você voltará à Área do Dono; se ela pedir o código de dono, digite normalmente.")}
  catch(e){admTrialStatus("<strong>Não consegui enviar o link:</strong> "+escJanela(e.message||"tente de novo."),true)}}
-async function processarRetornoAdminEmail(params){try{history.replaceState(null,"",location.pathname+location.search+"#admin")}catch(e){}
+async function processarRetornoAdminEmail(params){try{history.replaceState(null,"",location.pathname+"#admin")}catch(e){}
  abrirModulo("admin");
  if(params.get("error_description")){if(adminOk())mostrarAdmin();admTrialStatus("<strong>Link não validado:</strong> "+escJanela(params.get("error_description"))+"<br><span class='small'>Peça um novo link e use o e-mail mais recente.</span>",true);return}
  admSbSalvar({access_token:params.get("access_token"),refresh_token:params.get("refresh_token"),expires_in:params.get("expires_in"),expires_at:params.get("expires_at")},"");
@@ -1345,8 +1345,9 @@ async function confirmarCodigoTrial(){var email="";try{email=localStorage.getIte
  catch(e){trialMsg("<strong>Código não confirmado:</strong> "+escJanela(e.message||"confira os dígitos e tente de novo.")+"<br><span class='small'>Confira também se o código já expirou ou se chegou um código mais recente.</span>",true)}
  finally{btn.disabled=false;btn.textContent="✅ Confirmar e ativar meus 7 dias";atualizarTrialEmailUI()}}
 var trialRetornoProcessado=false;
-async function processarRetornoTrialEmail(){if(trialRetornoProcessado||!trialEmailConfigurado())return;var hash=location.hash||"";if(hash.indexOf("access_token=")<0&&hash.indexOf("error_description=")<0)return;trialRetornoProcessado=true;var params=new URLSearchParams(hash.charAt(0)==="#"?hash.slice(1):hash);
- var adminPendente=false;try{var quando=+localStorage.getItem("dronouAdminLoginPendente")||0;adminPendente=quando&&Date.now()-quando<3600000;localStorage.removeItem("dronouAdminLoginPendente")}catch(e){}
+async function processarRetornoTrialEmail(){if(trialRetornoProcessado||!trialEmailConfigurado())return;var hash=location.hash||"";if(hash.indexOf("access_token=")<0&&hash.indexOf("error_description=")<0)return;trialRetornoProcessado=true;var bruto=hash.charAt(0)==="#"?hash.slice(1):hash;var pos=Math.max(bruto.lastIndexOf("#access_token="),bruto.lastIndexOf("#error="),bruto.lastIndexOf("#error_description="));if(pos>0)bruto=bruto.slice(pos+1);var params=new URLSearchParams(bruto);
+ var adminPendente=false;try{adminPendente=new URLSearchParams(location.search||"").get("dronouAdmin")==="1"}catch(e){}
+ if(!adminPendente){try{var quando=+localStorage.getItem("dronouAdminLoginPendente")||0;adminPendente=quando&&Date.now()-quando<3600000;localStorage.removeItem("dronouAdminLoginPendente")}catch(e){}}
  if(adminPendente){await processarRetornoAdminEmail(params);return}
  try{history.replaceState(null,"",location.pathname+location.search+"#pro")}catch(e){}
  abrirModulo("pro");
