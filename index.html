@@ -702,6 +702,19 @@ footer .marca{color:#fff;font-size:19px}
 <p class="no-print"><button class="btn" onclick="gerarCodigosAdmin()">🔑 Gerar códigos</button><button class="btn sec" onclick="copiarHashesAdmin()">Copiar hashes do último lote</button><button class="btn sec" onclick="exportarAdmin()">⬇️ Exportar controle (CSV)</button><button class="btn sec" onclick="sairAdmin()">Sair</button></p>
 <div id="admLote" class="result"></div>
 <div id="admVisitas" class="alert blue" style="margin:10px 0">📊 <strong>Visitas:</strong> contador ainda não configurado (veja a instrução no aviso desta página).</div>
+<div class="card" id="admTrialBox" style="margin:14px 0">
+<h3 style="margin-top:0">📧 Testes gratuitos — Supabase</h3>
+<p class="small">Veja quantas pessoas ativaram o teste, quem está ativo agora e quem está vencendo. Para proteger os e-mails, esta lista só carrega depois que você entra com o <strong>e-mail de dono autorizado</strong> no Supabase. A chave pública do site, sozinha, não lê a lista.</p>
+<div class="grid g2">
+<div><label>E-mail de dono autorizado</label><input id="admTrialEmail" type="email" autocomplete="email" placeholder="seu-email@exemplo.com"></div>
+<div><label>&nbsp;</label><p class="no-print" style="margin:0"><button class="btn" onclick="adminEnviarLinkTrial()">✉️ Receber link de acesso</button><button class="btn sec" onclick="carregarTrialsAdmin()">🔄 Atualizar dados</button><button class="btn sec" onclick="adminSairSupabase()">Sair do Supabase</button></p></div>
+</div>
+<div id="admTrialStatus" class="result"></div>
+<div id="admTrialStats" style="margin-top:12px"></div>
+<div id="admTrialTabela" style="overflow-x:auto;margin-top:10px"></div>
+<p class="no-print"><button class="btn sec" onclick="exportarTrialsAdmin()">⬇️ Exportar trials (CSV)</button><button class="btn sec" onclick="copiarEmailsAtivosAdmin()">Copiar e-mails ativos</button></p>
+<p class="small">Dados pessoais: use somente para acompanhar e atender quem testou o DRONOU. Não compartilhe a lista fora do seu controle de vendas.</p>
+</div>
 <div id="admStats" style="margin:10px 0"></div>
 <div id="admTabela" style="overflow-x:auto"></div>
 <div class="alert" style="margin-top:14px"><strong>Para um código valer no site:</strong> gere o lote → copie os <strong>hashes</strong> → cole em <code>CONFIG.PRO_HASHES</code> ou <code>CONFIG.ADV_HASHES</code> no index.html → suba o arquivo no GitHub. Gere em lotes (ex.: 10 de cada) para não precisar subir toda hora. Para <strong>revogar</strong>, apague o hash dele da lista e suba de novo.</div>
@@ -1197,8 +1210,41 @@ function adminOk(){try{return sessionStorage.getItem("dronouAdmin")==="1"}catch(
 function entrarAdmin(){var v=(document.getElementById("admSenha").value||"").trim().toUpperCase(),m=document.getElementById("admMsg");
  sha256hex(v).then(function(h){if(h===CONFIG.ADMIN_HASH){try{sessionStorage.setItem("dronouAdmin","1")}catch(e){}mostrarAdmin()}
  else{m.className="result show bad";m.innerHTML="<strong>Código de dono não reconhecido.</strong>"}})}
-function mostrarAdmin(){if(!adminOk())return;carregarVisitas();document.getElementById("adminTrava").style.display="none";document.getElementById("adminPainel").style.display="block";renderAdmin()}
-function sairAdmin(){try{sessionStorage.removeItem("dronouAdmin")}catch(e){}document.getElementById("adminPainel").style.display="none";document.getElementById("adminTrava").style.display="block";abrirModulo("inicio")}
+function mostrarAdmin(){if(!adminOk())return;carregarVisitas();document.getElementById("adminTrava").style.display="none";document.getElementById("adminPainel").style.display="block";renderAdmin();carregarTrialsAdmin()}
+function sairAdmin(){adminSairSupabase(false);try{sessionStorage.removeItem("dronouAdmin")}catch(e){}document.getElementById("adminPainel").style.display="none";document.getElementById("adminTrava").style.display="block";abrirModulo("inicio")}
+/* ============ ADMIN: TRIALS NO SUPABASE ============ */
+var admTrials=[],admTrialCarregando=false;
+function admSbSessao(){try{return JSON.parse(localStorage.getItem("dronouAdminSupabaseSessao")||"null")}catch(e){return null}}
+function admSbSalvar(resp,email){if(!resp||!resp.access_token)return;var s={access_token:resp.access_token,refresh_token:resp.refresh_token||"",expires_at:resp.expires_at?+resp.expires_at*1000:Date.now()+((+resp.expires_in||3600)*1000),email:email||(resp.user&&resp.user.email)||""};try{localStorage.setItem("dronouAdminSupabaseSessao",JSON.stringify(s))}catch(e){}}
+function admTrialStatus(html,ruim){var b=document.getElementById("admTrialStatus");if(!b)return;b.className="result show"+(ruim?" bad":"");b.innerHTML=html}
+async function admSbFetch(caminho,opcoes,token){opcoes=opcoes||{};var headers={"apikey":CONFIG.SUPABASE_ANON_KEY,"Content-Type":"application/json"};if(token)headers.Authorization="Bearer "+token;opcoes.headers=headers;var r=await fetch(CONFIG.SUPABASE_URL.replace(/\/$/,"")+caminho,opcoes);var txt=await r.text(),dados=null;try{dados=txt?JSON.parse(txt):null}catch(e){}if(!r.ok){var msg=(dados&&(dados.msg||dados.message||dados.error_description||dados.error))||("Erro "+r.status);throw new Error(msg)}return dados}
+async function admSbAccessToken(){var s=admSbSessao();if(!s||!s.access_token)return null;if(!s.expires_at||s.expires_at>Date.now()+60000)return s.access_token;if(!s.refresh_token)return null;try{var dados=await admSbFetch("/auth/v1/token?grant_type=refresh_token",{method:"POST",body:JSON.stringify({refresh_token:s.refresh_token})},null);admSbSalvar(dados,s.email);return dados.access_token}catch(e){try{localStorage.removeItem("dronouAdminSupabaseSessao")}catch(_e){}return null}}
+async function adminEnviarLinkTrial(){var input=document.getElementById("admTrialEmail"),email=input?(input.value||"").trim().toLowerCase():"";if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){admTrialStatus("<strong>Digite o e-mail de dono autorizado</strong> para receber o link de acesso.",true);return}
+ try{localStorage.setItem("dronouAdminLoginPendente",String(Date.now()));localStorage.setItem("dronouAdminEmailPendente",email)}catch(e){}
+ admTrialStatus("Enviando link seguro para <strong>"+escJanela(email)+"</strong>…");
+ try{await admSbFetch("/auth/v1/otp",{method:"POST",body:JSON.stringify({email:email,should_create_user:true,email_redirect_to:"https://dronou.com.br/#admin"})},null);admTrialStatus("<strong>✉️ Link enviado.</strong> Abra o e-mail do Supabase e toque em <strong>Sign in</strong>. Você voltará à Área do Dono; se ela pedir o código de dono, digite normalmente.")}
+ catch(e){admTrialStatus("<strong>Não consegui enviar o link:</strong> "+escJanela(e.message||"tente de novo."),true)}}
+async function processarRetornoAdminEmail(params){try{history.replaceState(null,"",location.pathname+location.search+"#admin")}catch(e){}
+ abrirModulo("admin");
+ if(params.get("error_description")){if(adminOk())mostrarAdmin();admTrialStatus("<strong>Link não validado:</strong> "+escJanela(params.get("error_description"))+"<br><span class='small'>Peça um novo link e use o e-mail mais recente.</span>",true);return}
+ admSbSalvar({access_token:params.get("access_token"),refresh_token:params.get("refresh_token"),expires_in:params.get("expires_in"),expires_at:params.get("expires_at")},"");
+ try{var tok=await admSbAccessToken();if(tok){var user=await admSbFetch("/auth/v1/user",{method:"GET"},tok);var s=admSbSessao();if(user&&user.email&&s){s.email=user.email;localStorage.setItem("dronouAdminSupabaseSessao",JSON.stringify(s))}}}catch(e){}
+ if(adminOk()){mostrarAdmin();admTrialStatus("<strong>✅ Login do dono confirmado.</strong> Carregando os testes gratuitos…")}
+ else{admTrialStatus("<strong>✅ Login do Supabase confirmado.</strong> Agora digite seu código de dono acima para abrir o painel.")}}
+function admDataBR(iso){if(!iso)return"—";return new Date(iso).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
+function admDiasRestantes(iso){return Math.max(0,Math.ceil((new Date(iso)-new Date())/86400000))}
+async function carregarTrialsAdmin(){var tabela=document.getElementById("admTrialTabela"),stats=document.getElementById("admTrialStats");if(!tabela||!stats||admTrialCarregando)return;var tok=await admSbAccessToken();if(!tok){stats.innerHTML="";tabela.innerHTML="";admTrialStatus("<strong>Entre com o e-mail de dono autorizado</strong> para carregar a lista de testes. Se é sua primeira vez, rode antes o SQL <code>admin-trial.sql</code> no Supabase.");return}
+ admTrialCarregando=true;admTrialStatus("Carregando testes do Supabase…");
+ try{var dados=await admSbFetch("/rest/v1/trial_users?select=email,trial_started_at,trial_expires_at&order=trial_started_at.desc&limit=500",{method:"GET"},tok);admTrials=Array.isArray(dados)?dados:[];renderTrialsAdmin();var s=admSbSessao();admTrialStatus("<strong>✅ Dados carregados</strong> para "+escJanela(s&&s.email?s.email:"seu e-mail")+". "+(admTrials.length?"":"Se a lista veio vazia mas o relatório SQL mostra registros, confira se o SQL do painel do dono foi rodado com este mesmo e-mail."))}
+ catch(e){admTrials=[];stats.innerHTML="";tabela.innerHTML="";admTrialStatus("<strong>Não consegui carregar os trials:</strong> "+escJanela(e.message||"erro desconhecido")+"<br><span class='small'>Confira se você rodou o <code>admin-trial.sql</code> com o mesmo e-mail usado no login.</span>",true)}
+ finally{admTrialCarregando=false}}
+function renderTrialsAdmin(){var stats=document.getElementById("admTrialStats"),tabela=document.getElementById("admTrialTabela");if(!stats||!tabela)return;var agora=new Date(),ativos=admTrials.filter(function(x){return new Date(x.trial_expires_at)>agora}),encerrados=admTrials.length-ativos.length,ult7=admTrials.filter(function(x){return new Date(x.trial_started_at)>=new Date(Date.now()-7*86400000)}).length,vencendo=ativos.filter(function(x){return new Date(x.trial_expires_at)<=new Date(Date.now()+2*86400000)}).length;
+ function num(v,l){return"<div class='num'><b>"+v+"</b><span>"+l+"</span></div>"}
+ stats.innerHTML="<div class='grid g4'>"+num(admTrials.length,"testes ativados")+num(ativos.length,"ativos agora")+num(encerrados,"encerrados")+num(ult7,"começaram em 7 dias")+"</div>"+(vencendo?"<div class='alert' style='margin-top:10px'><strong>⏰ "+vencendo+" teste(s) vencem em até 2 dias.</strong> São os primeiros para chamar e converter.</div>":"");
+ tabela.innerHTML=admTrials.length?("<table><tr><th>E-mail</th><th>Início</th><th>Fim</th><th>Status</th></tr>"+admTrials.slice(0,50).map(function(x){var ativo=new Date(x.trial_expires_at)>agora;return"<tr><td>"+escJanela(x.email)+"</td><td>"+admDataBR(x.trial_started_at)+"</td><td>"+admDataBR(x.trial_expires_at)+"</td><td>"+(ativo?"🟢 ATIVO — "+admDiasRestantes(x.trial_expires_at)+" dia(s)":"⚪ ENCERRADO")+"</td></tr>"}).join("")+"</table>"+(admTrials.length>50?"<p class='small'>Mostrando os 50 mais recentes de "+admTrials.length+". Exporte o CSV para ver todos.</p>":"")):"<p class='small'>Nenhum teste encontrado para este login.</p>"}
+function exportarTrialsAdmin(){if(!admTrials.length){admTrialStatus("<strong>Carregue os dados primeiro</strong> para exportar.",true);return}var csv="\ufeffemail,inicio,fim,status,dias_restantes\n"+admTrials.map(function(x){var ativo=new Date(x.trial_expires_at)>new Date();return[x.email,admDataBR(x.trial_started_at),admDataBR(x.trial_expires_at),ativo?"ATIVO":"ENCERRADO",ativo?admDiasRestantes(x.trial_expires_at):0].map(function(v){return'"'+String(v).replace(/"/g,'""')+'"'}).join(",")}).join("\n");var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="dronou-testes-gratuitos.csv";a.click();URL.revokeObjectURL(a.href)}
+function copiarEmailsAtivosAdmin(){var emails=admTrials.filter(function(x){return new Date(x.trial_expires_at)>new Date()}).map(function(x){return x.email});if(!emails.length){admTrialStatus("<strong>Nenhum e-mail ativo carregado</strong> para copiar.",true);return}if(navigator.clipboard)navigator.clipboard.writeText(emails.join("; ")).then(function(){admTrialStatus("<strong>✅ "+emails.length+" e-mail(s) ativo(s) copiados.</strong>")})}
+function adminSairSupabase(avisar){try{localStorage.removeItem("dronouAdminSupabaseSessao");localStorage.removeItem("dronouAdminLoginPendente")}catch(e){}admTrials=[];var st=document.getElementById("admTrialStats"),tb=document.getElementById("admTrialTabela");if(st)st.innerHTML="";if(tb)tb.innerHTML="";if(avisar!==false)admTrialStatus("<strong>Sessão do Supabase encerrada neste navegador.</strong> Os dados continuam salvos no Supabase.")}
 function regAdmin(){try{return JSON.parse(localStorage.getItem("dronouAdminCodigos")||"[]")}catch(e){return[]}}
 function salvarRegAdmin(r){try{localStorage.setItem("dronouAdminCodigos",JSON.stringify(r))}catch(e){}}
 var ultimoLoteHashes=[];
@@ -1300,6 +1346,8 @@ async function confirmarCodigoTrial(){var email="";try{email=localStorage.getIte
  finally{btn.disabled=false;btn.textContent="✅ Confirmar e ativar meus 7 dias";atualizarTrialEmailUI()}}
 var trialRetornoProcessado=false;
 async function processarRetornoTrialEmail(){if(trialRetornoProcessado||!trialEmailConfigurado())return;var hash=location.hash||"";if(hash.indexOf("access_token=")<0&&hash.indexOf("error_description=")<0)return;trialRetornoProcessado=true;var params=new URLSearchParams(hash.charAt(0)==="#"?hash.slice(1):hash);
+ var adminPendente=false;try{var quando=+localStorage.getItem("dronouAdminLoginPendente")||0;adminPendente=quando&&Date.now()-quando<3600000;localStorage.removeItem("dronouAdminLoginPendente")}catch(e){}
+ if(adminPendente){await processarRetornoAdminEmail(params);return}
  try{history.replaceState(null,"",location.pathname+location.search+"#pro")}catch(e){}
  abrirModulo("pro");
  if(params.get("error_description")){trialMsg("<strong>Não consegui validar o link do e-mail:</strong> "+escJanela(params.get("error_description"))+"<br><span class='small'>Peça um novo link e toque na mensagem mais recente.</span>",true);return}
