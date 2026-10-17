@@ -1360,7 +1360,7 @@ async function processarRetornoTrialEmail(){if(trialRetornoProcessado||!trialEma
  else if(item&&item.status==="used"){atualizarPlanoUI();trialMsg("<strong>Este e-mail já usou o teste de 7 dias.</strong> Para continuar com tudo liberado, assine o Advanced.",true)}
  else{trialMsg("<strong>E-mail confirmado, mas não consegui registrar o teste agora.</strong> Toque em “Ativar meus 7 dias com este e-mail”.",true)}
  atualizarTrialEmailUI()}
-setTimeout(processarRetornoTrialEmail,0);
+processarRetornoTrialEmail(); /* imediato: precisa rodar antes da navegação inicial trocar o hash e apagar o token do retorno */
 function planoAtual(){try{var pl=localStorage.getItem("dronouPlano");if(pl==="adv"||pl==="pro"){var exp=+localStorage.getItem("dronouPlanoExpira")||0;if(!(exp&&Date.now()>exp))return pl}if(localStorage.getItem("dronouPro")==="1")return "pro"}catch(e){}
  if(trialAtivo())return "adv";return "free"}
 function iniciarTrial(){if(trialEmailConfigurado()){iniciarTrialEmail();return}var msg=document.getElementById("pMsg");
