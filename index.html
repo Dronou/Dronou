@@ -125,6 +125,7 @@ header.hero .lead{margin-left:auto;margin-right:auto}
 .wxcard span{font-size:12px;color:var(--mut);display:block}
 .wxcard b{font-size:23px;display:block;margin:3px 0}
 .wxcard small{color:var(--mut)}
+.janela-card{position:relative;overflow:hidden}.janela-card.melhor{border:2px solid var(--ciano);background:#effafa}.janela-nota{font-size:32px;line-height:1;color:var(--verde)}.janela-meta{font-size:13px;color:var(--mut)}.janela-fatores{font-size:13px;margin:10px 0}.janela-card .progress{margin:10px 0}
 
 /* ===== VISUAL PROFISSIONAL DRONOU ===== */
 :root{--verde:#0d4f57;--escuro:#0a1114;--azul:#0d2b33;--fundo:#edf2f3;--texto:#132025;--mut:#5b6f74;--linha:#d5dfe1}
@@ -243,7 +244,7 @@ footer .marca{color:#fff;font-size:19px}
 <div class="grid g3" style="margin-top:14px">
 <div class="card"><div class="ico">🎓</div><h3>Destaque: prova ANAC</h3><p id="contagem2027">Calculando prazo…</p><p>Treine no simulado de 20 questões antes de fazer a oficial gratuita.</p><button class="btn" onclick="abrirModulo('quiz')">Treinar agora →</button></div>
 <div class="card"><div class="ico">🚁</div><h3>Minha frota</h3><p id="resumoFrota">Nenhuma aeronave salva ainda.</p><button class="btn" onclick="abrirModulo('aeronaves')">Ver minhas aeronaves →</button></div>
-<div class="card preco"><div class="ico">🌦️</div><h3>Clima de voo <span class="protag">PRO</span></h3><p>Vento, rajadas, chuva e índice KP antes de decolar — mais Minhas Aeronaves e o checklist “Vou voar agora”.</p><button class="btn" onclick="abrirModulo('clima')">Ver o clima →</button></div>
+<div class="card preco"><div class="ico">🌦️</div><h3>Clima de voo <span class="protag">PRO</span></h3><p>Vento, rajadas, chuva, índice KP e a <strong>melhor janela para decolar</strong> — mais Minhas Aeronaves e o checklist “Vou voar agora”.</p><button class="btn" onclick="abrirModulo('clima')">Ver o clima →</button></div>
 <div class="card preco"><div class="ico">💬</div><h3>Diagnóstico gratuito</h3><p>Contou modelo, uso e onde travou — um especialista devolve o mapa do que falta.</p><button class="btn amarelo" style="color:#241a00!important" onclick="abrirModulo('ajuda')">Pedir diagnóstico →</button></div>
 </div>
 <div class="stats">
@@ -356,7 +357,7 @@ footer .marca{color:#fff;font-size:19px}
 
 <!-- Clima DE VOO (PRO) -->
 <section id="clima" class="modulo"><h2>🌦️ Clima de voo — dá para decolar?</h2>
-<p class="sub">Estilo UAV Forecast: vento, rajadas, chuva, visibilidade e <strong>índice KP</strong> (atividade geomagnética que afeta GPS/bússola) no local do voo. Fontes: Open-Meteo e NOAA/SWPC. O KP exibido é a estimativa geomagnética em tempo quase real, revisada a cada minuto, acompanhada da previsão do bloco de 3 horas. Não substitui SARPAS, ARO nem o seu julgamento.</p>
+<p class="sub">Estilo UAV Forecast: vento, rajadas, chuva, visibilidade e <strong>índice KP</strong> (atividade geomagnética que afeta GPS/bússola) no local do voo. Fontes: Open-Meteo e NOAA/SWPC. O KP exibido é a estimativa geomagnética em tempo quase real, revisada a cada minuto, acompanhada da previsão do bloco de 3 horas. A <strong>Melhor janela para voar</strong> cruza todos esses fatores e o KP previsto de cada período para recomendar quando decolar. Não substitui SARPAS, ARO nem o seu julgamento.</p>
 <div class="grid g2">
 <div><label>Cidade do voo</label><input id="cBusca" placeholder="Ex.: Ubatuba-SP, São Paulo, Curitiba">
 <div class="no-print" style="margin-top:8px"><button class="btn" onclick="buscarCidade()">🔎 Buscar cidade</button><button class="btn sec" onclick="usarGPS()">📍 Usar minha localização</button></div></div>
@@ -375,6 +376,16 @@ footer .marca{color:#fff;font-size:19px}
 <div class="wxcard"><span>🧲 Índice KP</span><b id="cKp">—</b><small id="cKpTxt">geomagnético</small></div>
 <div class="wxcard"><span>🌅 Sol</span><b id="cSol">—</b><small>nascer → pôr do sol</small></div>
 </div>
+<div id="painelJanela" style="display:none;margin-top:20px">
+<h3>🗓️ Melhor janela para voar</h3>
+<p class="janela-meta">O DRONOU cruza vento, rajadas, chuva, visibilidade, nuvens, luz do sol e o <strong>KP previsto de cada bloco de 3 horas</strong> para apontar os melhores períodos contínuos. Os perfis são prudentes e apoiam o planejamento: o manual da sua aeronave sempre prevalece.</p>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin:12px 0">
+<div><label for="jPeriodo">Período analisado</label><select id="jPeriodo" onchange="renderJanelas()"><option value="24">Próximas 24 horas — Pro</option><option value="48">Próximas 48 horas — Advanced</option></select></div>
+<div><label for="jAeronave">Aeronave / perfil de voo</label><select id="jAeronave" onchange="renderJanelas()"><option value="padrao">Drone padrão (251 g a 2 kg)</option><option value="mini">Mini (até 250 g)</option><option value="robusto">Robusto / profissional (acima de 2 kg)</option></select></div>
+<div><label>Local analisado</label><div class="card" style="padding:11px 13px" id="jLocalNome">—</div></div>
+</div>
+<div id="janelaResultado"></div>
+</div>
 <h3>Próximas horas</h3>
 <div id="cHoras" style="overflow-x:auto"><p class="small">Busque uma cidade ou use sua localização para carregar a previsão.</p></div>
 <p class="small" id="cFonte">Limites de referência variam por modelo: mini drones sofrem com vento bem antes de drones maiores. Confira o manual do seu equipamento.</p>
@@ -385,8 +396,8 @@ footer .marca{color:#fff;font-size:19px}
 <p class="sub">As trilhas, o simulado ANAC e o “Posso voar?” continuam <strong>grátis para sempre</strong>. Os planos pagos liberam as ferramentas de campo que você usa em todo voo:</p>
 <div class="grid g3">
 <div class="card"><div class="ico">🆓</div><h3>Free</h3><p><strong>Para sair do zero:</strong></p><p>🧭 Trilhas ANATEL • SISANT • SARPAS NG<br>🧪 Simuladores SISANT e SARPAS<br>🎓 Simulado ANAC (20 questões)<br>🚦 “Posso voar?” e guias em PDF</p><span class="tag">GRÁTIS PARA SEMPRE</span></div>
-<div class="card preco"><div class="ico">⭐</div><h3>Pro</h3><p><strong>Free + ferramentas de campo:</strong></p><p>🌦️ Clima de voo completo (vento, rajadas, chuva, visibilidade e KP)<br>🚁 Minhas aeronaves (até 3 salvas)<br>✅ “Vou voar agora”: checklist e ficha de missão imprimíveis</p><span class="tag">R$ 29,90 POR 365 DIAS</span><p><a class="btn buy-link" data-plano="pro" href="https://t.me/dronoubr" target="_blank" rel="noopener">⭐ Quero o Pro</a></p></div>
-<div class="card preco destaque"><div class="selo-pop">MAIS POPULAR</div><div class="ico">🚀</div><h3>Advanced</h3><p><strong>Pro + tudo que vier:</strong></p><p>♾️ Aeronaves ilimitadas e ⭐ locais favoritos no Clima<br>📓 Diário de bordo dos seus voos<br>🔄 <strong>Todas as atualizações e ferramentas futuras incluídas</strong>, sem pagar de novo<br>⚡ Atendimento prioritário no Telegram</p><span class="tag">R$ 49,90 POR 365 DIAS — SÓ R$ 20 A MAIS QUE O PRO</span><p class="small" style="margin:7px 0 0">🎁 Ou teste grátis por 7 dias, sem cartão.</p><p><a class="btn buy-link" data-plano="adv" href="https://t.me/dronoubr" target="_blank" rel="noopener">🚀 Quero o Advanced</a></p></div>
+<div class="card preco"><div class="ico">⭐</div><h3>Pro</h3><p><strong>Free + ferramentas de campo:</strong></p><p>🌦️ Clima de voo completo (vento, rajadas, chuva, visibilidade e KP)<br>🗓️ Melhor janela para voar nas próximas 24 horas<br>🚁 Minhas aeronaves (até 3 salvas)<br>✅ “Vou voar agora”: checklist e ficha de missão imprimíveis</p><span class="tag">R$ 29,90 POR 365 DIAS</span><p><a class="btn buy-link" data-plano="pro" href="https://t.me/dronoubr" target="_blank" rel="noopener">⭐ Quero o Pro</a></p></div>
+<div class="card preco destaque"><div class="selo-pop">MAIS POPULAR</div><div class="ico">🚀</div><h3>Advanced</h3><p><strong>Pro + tudo que vier:</strong></p><p>♾️ Aeronaves ilimitadas e ⭐ locais favoritos no Clima<br>🗓️ Melhor janela em 48 horas + botão “Planejar este voo” direto para o checklist<br>📓 Diário de bordo dos seus voos<br>🔄 <strong>Todas as atualizações e ferramentas futuras incluídas</strong>, sem pagar de novo<br>⚡ Atendimento prioritário no Telegram</p><span class="tag">R$ 49,90 POR 365 DIAS — SÓ R$ 20 A MAIS QUE O PRO</span><p class="small" style="margin:7px 0 0">🎁 Ou teste grátis por 7 dias, sem cartão.</p><p><a class="btn buy-link" data-plano="adv" href="https://t.me/dronoubr" target="_blank" rel="noopener">🚀 Quero o Advanced</a></p></div>
 </div>
 <p class="small" id="planoAtualTxt"></p>
 <div class="alert" style="margin-top:14px" id="comoComprar"><strong>Como funciona:</strong> escolha seu plano e finalize a compra → você recebe seu <strong>código individual de acesso</strong> → digita abaixo uma vez e o plano fica liberado neste aparelho/navegador por <strong>365 dias</strong>, sem renovação automática escondida.</div>
@@ -748,7 +759,7 @@ atualizarProg();atualizarContagem();
 
 
 /* ============ Clima DE VOO ============ */
-var climaIniciado=false, ultimoLocal=null;
+var climaIniciado=false, ultimoLocal=null, climaAtual=null, janelasAtuais=[];
 function iniciarClima(){if(climaIniciado)return;climaIniciado=true;carregarClima(-23.5505,-46.6333,"São Paulo, SP (padrão — busque sua cidade)");setInterval(atualizarKP,60000);document.addEventListener("visibilitychange",function(){if(!document.hidden)atualizarKP()})}
 function cardinal(g){var d=["N","NE","L","SE","S","SO","O","NO"];return d[Math.round(g/45)%8]}
 function condicao(c){if(c===0)return"Céu limpo";if(c<=3)return"Nublado";if(c===45||c===48)return"Nevoeiro";if(c>=51&&c<=57)return"Garoa";if(c>=61&&c<=67)return"Chuva";if(c>=71&&c<=77)return"Neve";if(c>=80&&c<=82)return"Pancadas";if(c>=95)return"Tempestade";return"Código "+c}
@@ -763,7 +774,7 @@ function fetchNOAA(url,texto){var sep=url.indexOf("?")<0?"?":"&";return fetch(ur
 function dataNOAA(v){var d=new Date(String(v||"").replace(" ","T")+"Z");return isNaN(d)?null:d}
 function horaLocal(d){return d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):""}
 function numKP(v){return v===null||v===undefined||isNaN(v)?null:+v}
-function analisarKP(kpArr,kp3Arr,kpTxt){var d={aoVivo:null,aoVivoEm:null,fechado:null,fechadoEm:null,previsto:null,blocoInicio:null,blocoFim:null,principal:null,risco:0};
+function analisarKP(kpArr,kp3Arr,kpTxt){var d={aoVivo:null,aoVivoEm:null,fechado:null,fechadoEm:null,previsto:null,blocoInicio:null,blocoFim:null,principal:null,risco:0,serie:[]};
  if(kpArr&&kpArr.length){var ue=kpArr[kpArr.length-1];d.aoVivo=numKP(ue.estimated_kp!==undefined?ue.estimated_kp:ue.kp_index);d.aoVivoEm=dataNOAA(ue.time_tag)}
  if(kp3Arr&&kp3Arr.length){var u=kp3Arr[kp3Arr.length-1];d.fechado=numKP(u.Kp!==undefined?u.Kp:u.kp);d.fechadoEm=dataNOAA(u.time_tag)}
  if(kpTxt){try{var linhas=String(kpTxt).split("\n"),ini=-1;for(var z=0;z<linhas.length;z++){if(linhas[z].indexOf("NOAA Kp index forecast")>-1){ini=z;break}}
@@ -771,6 +782,9 @@ function analisarKP(kpArr,kp3Arr,kpTxt){var d={aoVivo:null,aoVivoEm:null,fechado
    var cab=(linhas[ini+1].match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2})/g)||[]),col=-1;
    for(var cc=0;cc<cab.length;cc++){var mm=cab[cc].match(/(\w{3})\s+(\d{1,2})/);if(mm&&meses[mm[1]]===mesU&&+mm[2]===diaU)col=cc}
    if(col>-1){for(var rr=ini+2;rr<linhas.length;rr++){var m2=linhas[rr].match(/^(\d{2})-\d{2}UT\s+(.+)/);if(!m2)continue;if(+m2[1]===bloco){var vals=m2[2].trim().split(/\s+/);d.previsto=numKP(parseFloat(vals[col]));break}}}
+   var datasCol=[];for(var cx=0;cx<cab.length;cx++){var mc=cab[cx].match(/(\w{3})\s+(\d{1,2})/);if(!mc||meses[mc[1]]===undefined)continue;for(var off=-1;off<=3;off++){var cand=new Date(Date.UTC(agora.getUTCFullYear(),agora.getUTCMonth(),agora.getUTCDate()+off));if(cand.getUTCMonth()===meses[mc[1]]&&cand.getUTCDate()===+mc[2]){datasCol.push({col:cx,data:cand});break}}}
+   for(var rs=ini+2;rs<linhas.length;rs++){var ms=linhas[rs].match(/^(\d{2})-\d{2}UT\s+(.+)/);if(!ms)continue;var vs=ms[2].trim().split(/\s+/);datasCol.forEach(function(dc){var v=numKP(parseFloat(vs[dc.col]));if(v!==null)d.serie.push({inicio:new Date(Date.UTC(dc.data.getUTCFullYear(),dc.data.getUTCMonth(),dc.data.getUTCDate(),+ms[1])),kp:v})})}
+   d.serie.sort(function(a,b){return a.inicio-b.inicio});
    d.blocoInicio=new Date(Date.UTC(agora.getUTCFullYear(),agora.getUTCMonth(),agora.getUTCDate(),bloco));d.blocoFim=new Date(d.blocoInicio.getTime()+3*3600*1000)}}catch(e){}}
  d.principal=d.aoVivo!==null?d.aoVivo:(d.previsto!==null?d.previsto:d.fechado);
  d.risco=Math.max(d.aoVivo||0,d.previsto||0,d.principal||0);return d}
@@ -782,10 +796,44 @@ function mostrarKP(d){var el=document.getElementById("cKp"),tx=document.getEleme
  if(d.aoVivo===null&&d.fechado!==null)partes.push("último bloco "+(d.fechadoEm?horaLocal(d.fechadoEm):"")+": "+d.fechado.toFixed(1).replace(".",","));
  el.textContent=(+kp).toFixed(1).replace(".",",");
  tx.textContent=(kp<=3?"GPS/bússola tranquilos":kp<5?"cautela com GPS":"risco ao GPS/bússola")+(partes.length?" • "+partes.join(" • "):"")}
-function atualizarKP(){return Promise.all([fetchNOAA("https://services.swpc.noaa.gov/json/planetary_k_index_1m.json"),fetchNOAA("https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json"),fetchNOAA("https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt",true)]).then(function(par){var d=analisarKP(par[0],par[1],par[2]);mostrarKP(d);return d}).catch(function(){return null})}
+function atualizarKP(){return Promise.all([fetchNOAA("https://services.swpc.noaa.gov/json/planetary_k_index_1m.json"),fetchNOAA("https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json"),fetchNOAA("https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt",true)]).then(function(par){var d=analisarKP(par[0],par[1],par[2]);mostrarKP(d);if(typeof climaAtual!=="undefined"&&climaAtual){climaAtual.kpDados=d;if(typeof renderJanelas==="function")renderJanelas()}return d}).catch(function(){return null})}
+function escJanela(v){return String(v===null||v===undefined?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function fmt1Janela(v){return v===null||v===undefined||isNaN(v)?"—":(+v).toFixed(1).replace(".",",")}
+function dataStrJanela(t){var p=String(t||"").split("T")[0].split("-");return p.length===3?new Date(+p[0],+p[1]-1,+p[2]):new Date(t)}
+function rotuloJanela(t,curto){var d=dataStrJanela(t),dias=["dom.","seg.","ter.","qua.","qui.","sex.","sáb."],data=("0"+d.getDate()).slice(-2)+"/"+("0"+(d.getMonth()+1)).slice(-2),hora=String(t||"").slice(11,16);return curto?data+" "+hora:dias[d.getDay()]+" "+data+", "+hora}
+function perfilJanela(){var sel=document.getElementById("jAeronave"),v=sel?sel.value:"padrao",base={mini:{nome:"Mini (até 250 g)",ventoBom:18,ventoMax:28,rajBom:28,rajMax:40},padrao:{nome:"Drone padrão (251 g a 2 kg)",ventoBom:25,ventoMax:38,rajBom:40,rajMax:58},robusto:{nome:"Robusto / profissional (acima de 2 kg)",ventoBom:32,ventoMax:48,rajBom:50,rajMax:72}};
+ if(v.indexOf("frota:")===0){var a=frota()[+v.slice(6)];if(a){var peso=parseFloat(String(a.peso||"").replace(",","."))||0,tipo=peso<=250?"mini":(peso<=2000?"padrao":"robusto"),p=Object.assign({},base[tipo]);p.nome=a.modelo+" ("+(peso?peso+" g":"peso não informado")+")";p.aeronave=a.modelo;return p}}
+ var p=Object.assign({},base[v]||base.padrao);p.aeronave=p.nome;return p}
+function montarAeronavesJanela(){var sel=document.getElementById("jAeronave");if(!sel)return;var atual=sel.value,f=frota(),html="<option value=\"padrao\">Drone padrão (251 g a 2 kg)</option><option value=\"mini\">Mini (até 250 g)</option><option value=\"robusto\">Robusto / profissional (acima de 2 kg)</option>";f.forEach(function(a,i){html+="<option value=\"frota:"+i+"\">🚁 "+escJanela(a.modelo||"Aeronave")+" — salva na frota</option>"});sel.innerHTML=html;if([].slice.call(sel.options).some(function(o){return o.value===atual}))sel.value=atual}
+function kpPrevistoJanela(t){if(!climaAtual||!climaAtual.kpDados)return null;var serie=climaAtual.kpDados.serie||[];if(!serie.length)return null;var base=Date.parse(String(t)+":00Z");if(isNaN(base))return null;var inst=base-((climaAtual.j&&climaAtual.j.utc_offset_seconds)||0)*1000,encontrado=null;for(var i=0;i<serie.length;i++){var ini=serie[i].inicio.getTime();if(inst>=ini&&inst<ini+3*3600*1000){encontrado=serie[i].kp;break}if(ini>inst)break}return encontrado}
+function ehDiaJanela(t){if(!climaAtual||!climaAtual.sol)return true;var dia=String(t).slice(0,10),sol=climaAtual.sol[dia],hora=String(t).slice(11,16);if(!sol)return hora>="06:00"&&hora<"18:30";return hora>=sol.nascer&&hora<sol.por}
+function penalidadeJanela(v,bom,max,peso){if(v<=bom)return 0;if(v<=max)return peso*(v-bom)/Math.max(1,max-bom);return peso+Math.min(30,(v-max)*1.1)}
+function pontuarHoraJanela(i,perfil){var h=climaAtual.h,t=h.time[i],vento=+h.wind_speed_10m[i]||0,rajada=+h.wind_gusts_10m[i]||0,chuva=h.precipitation_probability?+h.precipitation_probability[i]||0:0,vis=((+h.visibility[i]||0)/1000),nuvem=h.cloud_cover&&h.cloud_cover[i]!==undefined?+h.cloud_cover[i]:null,codigo=h.weather_code?h.weather_code[i]:null,kp=kpPrevistoJanela(t),dia=ehDiaJanela(t),nota=100;
+ nota-=penalidadeJanela(vento,perfil.ventoBom,perfil.ventoMax,30);nota-=penalidadeJanela(rajada,perfil.rajBom,perfil.rajMax,35);
+ if(chuva>5)nota-=chuva<=15?(chuva-5)*.7:(chuva<=30?7+(chuva-15)*.8:(chuva<=50?19+(chuva-30)*.9:37+(chuva-50)*.55));
+ if(vis<10)nota-=vis>=7?6:(vis>=5?14:(vis>=3?28:45));
+ if(nuvem!==null&&nuvem>30)nota-=nuvem<=60?4:(nuvem<=85?8:12);
+ if(kp!==null)nota-=kp>=5?55:(kp>4.5?35:(kp>4?25:(kp>3?12:0)));
+ if(codigo!==null){if(codigo>=95)nota-=70;else if(codigo>=71&&codigo<=77||codigo===85||codigo===86)nota-=60;else if(codigo===45||codigo===48)nota-=45;else if((codigo>=61&&codigo<=67)||(codigo>=80&&codigo<=82))nota-=20}
+ if(!dia)nota=Math.min(nota,20);nota=Math.max(0,Math.min(100,Math.round(nota)));
+ var nivel=nota>=80?"Excelente":(nota>=65?"Boa com cautela":(nota>=45?"Arriscada":"Evitar")),cor=nota>=80?"#0b6b3a":(nota>=65?"#7a5b00":(nota>=45?"#b54708":"#b42318"));
+ return {i:i,time:t,nota:nota,nivel:nivel,cor:cor,vento:vento,rajada:rajada,chuva:chuva,vis:vis,nuvem:nuvem,kp:kp,dia:dia,codigo:codigo}}
+function calcularJanelas(){if(!climaAtual)return[];var periodoSel=document.getElementById("jPeriodo"),periodo=periodoSel?+periodoSel.value:24,perfil=perfilJanela(),fim=Math.min(climaAtual.h.time.length,climaAtual.idx+periodo),horas=[];for(var i=climaAtual.idx;i<fim;i++)horas.push(pontuarHoraJanela(i,perfil));
+ function grupos(minimo){var gs=[],atual=null;horas.forEach(function(x){if(x.dia&&x.nota>=minimo){if(!atual||x.i!==atual.fimI+1){atual={inicio:x,fim:x,itens:[]};gs.push(atual)}atual.fim=x;atual.fimI=x.i;atual.itens.push(x)}else atual=null});return gs.filter(function(g){return g.itens.length>=2})}
+ var gs=grupos(72);if(!gs.length)gs=grupos(58);
+ gs.forEach(function(g){g.media=Math.round(g.itens.reduce(function(s,x){return s+x.nota},0)/g.itens.length);g.min=Math.min.apply(null,g.itens.map(function(x){return x.nota}));g.duracao=g.itens.length;g.ranking=g.media+Math.min(g.duracao,6)-(100-g.min)*.04;g.maxVento=Math.max.apply(null,g.itens.map(function(x){return x.vento}));g.maxRajada=Math.max.apply(null,g.itens.map(function(x){return x.rajada}));g.maxChuva=Math.max.apply(null,g.itens.map(function(x){return x.chuva}));g.minVis=Math.min.apply(null,g.itens.map(function(x){return x.vis}));g.maxKp=g.itens.some(function(x){return x.kp!==null})?Math.max.apply(null,g.itens.map(function(x){return x.kp||0})):null;g.perfil=perfil});
+ gs.sort(function(a,b){return b.ranking-a.ranking||b.duracao-a.duracao});return gs.slice(0,3)}
+function renderJanelas(){var painel=document.getElementById("painelJanela"),box=document.getElementById("janelaResultado");if(!painel||!box||!climaAtual)return;painel.style.display="block";montarAeronavesJanela();document.getElementById("jLocalNome").textContent=climaAtual.nome;
+ var periodoSel=document.getElementById("jPeriodo"),periodo=periodoSel?+periodoSel.value:24;
+ if(periodo===48&&!advAtivo()){janelasAtuais=[];box.innerHTML="<div class=\"alert\"><strong>🔒 Janela de 48 horas é do Advanced.</strong> No Pro você analisa as próximas 24 horas. No Advanced, planeje com dois dias de antecedência e envie a janela direto para o checklist de campo.<br><button class=\"btn\" style=\"margin-top:9px\" onclick=\"abrirModulo('pro')\">Ver o Advanced →</button></div>";return}
+ janelasAtuais=calcularJanelas();var perfil=perfilJanela();
+ if(!janelasAtuais.length){box.innerHTML="<div class=\"alert red\"><strong>Nenhuma janela boa encontrada no período.</strong> As condições previstas não atingiram uma nota segura para o perfil selecionado. Amplie o período, troque o perfil apenas se corresponder à aeronave real ou aguarde uma nova previsão.</div>";return}
+ box.innerHTML="<p class=\"janela-meta\">Ranking para <strong>"+escJanela(perfil.nome)+"</strong> • "+periodo+" horas analisadas • atualizado com a previsão mais recente. Nota alta não dispensa SARPAS, ARO quando aplicável, autorização do local e conferência no momento da decolagem.</p><div class=\"grid g3\">"+janelasAtuais.map(function(g,i){var periodoTxt=rotuloJanela(g.inicio.time)+" → "+rotuloJanela(g.fim.time,true),fatores="💨 Vento máx. "+Math.round(g.maxVento)+" km/h • rajadas "+Math.round(g.maxRajada)+" km/h<br>🌧️ Chuva máx. "+Math.round(g.maxChuva)+"% • 👀 visibilidade mín. "+fmt1Janela(g.minVis)+" km<br>🧲 KP previsto máx. "+(g.maxKp===null?"indisponível":fmt1Janela(g.maxKp))+" • ☀️ período com luz do sol",botao=advAtivo()?"<button class=\"btn\" onclick=\"planejarJanela("+i+")\">✅ Planejar este voo</button>":"<button class=\"btn\" onclick=\"abrirModulo('pro')\">🔒 Planejar no Advanced</button>";return "<div class=\"card janela-card"+(i===0?" melhor":"")+"\"><span class=\"tag\">"+(i===0?"🏆 MELHOR JANELA":"OPÇÃO "+(i+1))+"</span><h3>"+periodoTxt+"</h3><div class=\"janela-nota\">"+g.media+"<span style=\"font-size:16px;color:var(--mut)\">/100</span></div><div class=\"progress\"><div class=\"bar\" style=\"width:"+g.media+"%;background:"+(g.media>=80?"var(--verde)":(g.media>=65?"#d99a00":"#d66a00"))+"\"></div></div><p class=\"janela-meta\"><strong>"+g.duracao+"h contínuas</strong> • pior hora "+g.min+"/100<br>"+escJanela(g.perfil.nome)+"</p><p class=\"janela-fatores\">"+fatores+"</p>"+botao+(advAtivo()?"":"<p class=\"janela-meta\">Advanced envia local, data e janela para o checklist e prepara o diário.</p>")+"</div>"}).join("")+"</div>"}
+function planejarJanela(i){var g=janelasAtuais[i];if(!g||!climaAtual)return;if(!advAtivo()){abrirModulo("pro");return}var plano={local:climaAtual.nome,lat:climaAtual.lat,lon:climaAtual.lon,inicio:g.inicio.time,fim:g.fim.time,nota:g.media,aeronave:g.perfil.nome,criadoEm:new Date().toISOString()};try{localStorage.setItem("dronouVooPlanejado",JSON.stringify(plano))}catch(e){}
+ abrirModulo("campo");var localEl=document.getElementById("mLocal"),sarpasEl=document.getElementById("mSarpas"),quandoEl=document.getElementById("dQuando"),obsEl=document.getElementById("dObs");if(localEl)localEl.value=climaAtual.nome+" — "+g.perfil.nome;if(sarpasEl)sarpasEl.value=rotuloJanela(g.inicio.time)+" → "+rotuloJanela(g.fim.time,true)+" — SARPAS: solicitar/conferir";if(quandoEl)quandoEl.value=rotuloJanela(g.inicio.time)+" — "+climaAtual.nome;if(obsEl)obsEl.value="Janela planejada no DRONOU • nota média "+g.media+"/100 • "+g.perfil.nome+" • registrar duração após o voo";if(typeof gerarFicha==="function")gerarFicha()}
 function carregarClima(lat,lon,nome){ultimoLocal={lat:lat,lon:lon,nome:nome};
  var s=document.getElementById("climaStatus");s.className="result show";s.innerHTML="⏳ Carregando condições em <strong>"+nome+"</strong>…";
- var url="https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=temperature_2m,relative_humidity_2m,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation&hourly=wind_speed_10m,wind_gusts_10m,precipitation_probability,visibility&daily=sunrise,sunset&timezone=auto&forecast_days=2";
+ var url="https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=temperature_2m,relative_humidity_2m,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation&hourly=wind_speed_10m,wind_gusts_10m,precipitation_probability,visibility,cloud_cover,weather_code&daily=sunrise,sunset&timezone=auto&forecast_days=3";
  Promise.all([fetch(url,{cache:"no-store"}).then(function(r){return r.json()}),atualizarKP()]).then(function(par){
   var j=par[0],kpDados=par[1]||{},c=j.current,h=j.hourly;
   var kp=kpDados.principal,kpEst=kpDados.aoVivo,kpPrev=kpDados.previsto,kpVeredito=kpDados.risco||0;
@@ -801,6 +849,8 @@ function carregarClima(lat,lon,nome){ultimoLocal={lat:lat,lon:lon,nome:nome};
   document.getElementById("cVis").textContent=(visKm>=10?">10":visKm.toFixed(1).replace(".",","))+" km";
   document.getElementById("cNuvem").textContent=Math.round(c.cloud_cover)+"%";
   mostrarKP(kpDados);
+  climaAtual={j:j,h:h,c:c,idx:idx,kpDados:kpDados,nome:nome,lat:lat,lon:lon,sol:{}};
+  if(j.daily&&j.daily.time){j.daily.time.forEach(function(dia,di){climaAtual.sol[dia]={nascer:(j.daily.sunrise[di]||"").slice(11,16),por:(j.daily.sunset[di]||"").slice(11,16)}})}
   document.getElementById("cSol").textContent=j.daily.sunrise[0].slice(11,16)+" → "+j.daily.sunset[0].slice(11,16);
   var nota=100,avisos=[];
   function pen(v,faixas){for(var k=0;k<faixas.length;k++){if(v>faixas[k][0]){nota-=faixas[k][1];avisos.push(faixas[k][2]);return}}}
@@ -816,8 +866,9 @@ function carregarClima(lat,lon,nome){ultimoLocal={lat:lat,lon:lon,nome:nome};
   else{titulo="🔴 Não recomendado agora";cls+=" stop"}
   s.className=cls;
   s.innerHTML="<h3 style='margin-top:0'>"+titulo+" — "+nome+"</h3><p>Índice de condições: <strong>"+Math.max(0,nota)+"/100</strong>"+(avisos.length?" • "+avisos.join("; "):" • vento, chuva, visibilidade e KP dentro do tranquilo para a maioria dos modelos")+".</p><p class='small'>Mesmo com clima bom: SISANT, SARPAS favorável e permissão do local continuam obrigatórios. Atualizado agora ("+c.time.replace("T"," ")+").</p>";
-  var linhas="";for(var m=idx;m<Math.min(idx+12,h.time.length);m++){linhas+="<tr><td>"+h.time[m].slice(11,16)+"</td><td>"+Math.round(h.wind_speed_10m[m])+" km/h</td><td>"+Math.round(h.wind_gusts_10m[m])+" km/h</td><td>"+(h.precipitation_probability[m]||0)+"%</td><td>"+((h.visibility[m]||0)/1000).toFixed(1).replace(".",",")+" km</td></tr>"}
-  document.getElementById("cHoras").innerHTML="<table><tr><th>Hora</th><th>Vento</th><th>Rajadas</th><th>Chuva</th><th>Visib.</th></tr>"+linhas+"</table>";
+  renderJanelas();
+  var perfilTabela=perfilJanela(),linhas="";for(var m=idx;m<Math.min(idx+12,h.time.length);m++){var ph=pontuarHoraJanela(m,perfilTabela);linhas+="<tr><td>"+h.time[m].slice(11,16)+"</td><td>"+Math.round(h.wind_speed_10m[m])+" km/h</td><td>"+Math.round(h.wind_gusts_10m[m])+" km/h</td><td>"+(h.precipitation_probability[m]||0)+"%</td><td>"+((h.visibility[m]||0)/1000).toFixed(1).replace(".",",")+" km</td><td>"+(ph.kp===null?"—":fmt1Janela(ph.kp))+"</td><td><strong style=\"color:"+ph.cor+"\">"+ph.nota+"</strong> <span class=\"small\">"+ph.nivel+"</span></td></tr>"}
+  document.getElementById("cHoras").innerHTML="<table><tr><th>Hora</th><th>Vento</th><th>Rajadas</th><th>Chuva</th><th>Visib.</th><th>KP prev.</th><th>Nota</th></tr>"+linhas+"</table>";
  }).catch(function(){erroClima()})}
 
 
