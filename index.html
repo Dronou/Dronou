@@ -578,7 +578,7 @@ nav a{font-family:'Sora',system-ui,sans-serif;font-weight:600}
 <section id="clima" class="modulo"><h2>🌦️ Clima de voo — dá para decolar?</h2>
 <p class="sub">Estilo UAV Forecast: vento, rajadas, chuva, visibilidade e <strong>índice KP</strong> (atividade geomagnética que afeta GPS/bússola) no local do voo. Fontes: Open-Meteo e NOAA/SWPC. O KP exibido é a estimativa geomagnética em tempo quase real, revisada a cada minuto, acompanhada da previsão do bloco de 3 horas. Nos primeiros minutos de um novo bloco, quando a estimativa de 1 minuto reinicia e ainda está estabilizando, o card prioriza a previsão do bloco. A <strong>Melhor janela para voar</strong> cruza todos esses fatores e o KP previsto de cada período para recomendar quando decolar. Não substitui SARPAS, ARO nem o seu julgamento.</p>
 <div class="grid g2">
-<div><label>Cidade do voo</label><input id="cBusca" placeholder="Ex.: Ubatuba-SP, São Paulo, Curitiba">
+<div><label>Cidade do voo</label><input id="cBusca" name="cidadeVoo" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Ex.: Ubatuba-SP, São Paulo, Curitiba">
 <div class="no-print" style="margin-top:8px"><button class="btn" onclick="buscarCidade()">🔎 Buscar cidade</button><button class="btn sec" onclick="usarGPS()">📍 Usar minha localização</button></div></div>
 <div><div class="alert blue"><strong>Como ler:</strong> vento sustentado e rajada mandam no controle do drone; KP até 3 é tranquilo, 4 pede cautela e 5+ pode degradar GPS e bússola — adie voos de precisão.</div></div>
 </div>
@@ -862,6 +862,15 @@ nav a{font-family:'Sora',system-ui,sans-serif;font-weight:600}
 <div id="admTrialTabela" style="overflow-x:auto;margin-top:10px"></div>
 <p class="no-print"><button class="btn sec" onclick="exportarTrialsAdmin()">⬇️ Exportar trials (CSV)</button><button class="btn sec" onclick="copiarEmailsAtivosAdmin()">Copiar e-mails ativos</button></p>
 <p class="small">Dados pessoais: use somente para acompanhar e atender quem testou o DRONOU. Não compartilhe a lista fora do seu controle de vendas.</p>
+</div>
+<div class="card" id="admVendasBox" style="margin:14px 0">
+<h3 style="margin-top:0">🛒 Vendas automáticas — Kiwify</h3>
+<p class="small">Quando uma compra é aprovada, o webhook separa o próximo código livre do estoque, envia ao cliente por e-mail e a venda aparece aqui. Requer o mesmo login de dono do Supabase (botões acima) e os SQLs <code>vendas.sql</code> + <code>importar-estoque-kiwify.sql</code> rodados uma vez.</p>
+<p class="no-print" style="margin:0"><button class="btn" onclick="carregarVendasAdmin()">🔄 Atualizar vendas</button><button class="btn sec" onclick="exportarVendasAdmin()">⬇️ Exportar vendas (CSV)</button></p>
+<div id="admVendasStatus" class="result"></div>
+<div id="admVendasStats" style="margin-top:12px"></div>
+<div id="admVendasTabela" style="overflow-x:auto;margin-top:10px"></div>
+<p class="small">Estoque zerando? Gere um lote novo na área do dono, importe os códigos no estoque (SQL) — código entregue só valida no site depois de vendido, e reembolso revoga automaticamente.</p>
 </div>
 <div id="admStats" style="margin:10px 0"></div>
 <div id="admTabela" style="overflow-x:auto"></div>
@@ -1229,10 +1238,10 @@ atualizarProg();atualizarContagem();
 
 /* ============ Clima DE VOO ============ */
 var climaIniciado=false, ultimoLocal=null, climaAtual=null, janelasAtuais=[];
-function iniciarClima(){if(climaIniciado)return;climaIniciado=true;carregarClima(-23.5505,-46.6333,"São Paulo, SP (padrão — busque sua cidade)");setInterval(atualizarKP,60000);document.addEventListener("visibilitychange",function(){if(!document.hidden)atualizarKP()})}
+function iniciarClima(){if(climaIniciado)return;climaIniciado=true;var cb=document.getElementById("cBusca");if(cb&&/^[\d\s.,-]+$/.test((cb.value||"").trim())){cb.value=""}carregarClima(-23.5505,-46.6333,"São Paulo, SP (padrão — busque sua cidade)");setInterval(atualizarKP,60000);document.addEventListener("visibilitychange",function(){if(!document.hidden)atualizarKP()})}
 function cardinal(g){var d=["N","NE","L","SE","S","SO","O","NO"];return d[Math.round(g/45)%8]}
 function condicao(c){if(c===0)return"Céu limpo";if(c<=3)return"Nublado";if(c===45||c===48)return"Nevoeiro";if(c>=51&&c<=57)return"Garoa";if(c>=61&&c<=67)return"Chuva";if(c>=71&&c<=77)return"Neve";if(c>=80&&c<=82)return"Pancadas";if(c>=95)return"Tempestade";return"Código "+c}
-function buscarCidade(){var q=(document.getElementById("cBusca").value||"").trim();if(!q){return}
+function buscarCidade(){var q=(document.getElementById("cBusca").value||"").trim();if(!q){return}if(/^[\d\s.,-]+$/.test(q)){document.getElementById("cBusca").value="";document.getElementById("climaStatus").className="result show bad";document.getElementById("climaStatus").innerHTML="<strong>Digite o nome da cidade.</strong> Ex.: Pouso Alegre-MG, Ubatuba-SP.";return}
  fetch("https://geocoding-api.open-meteo.com/v1/search?name="+encodeURIComponent(q)+"&count=1&language=pt&format=json").then(function(r){return r.json()}).then(function(j){
   if(!j.results||!j.results.length){document.getElementById("climaStatus").className="result show bad";document.getElementById("climaStatus").innerHTML="<strong>Cidade não encontrada.</strong> Tente “Cidade-UF”.";return}
   var c=j.results[0];carregarClima(c.latitude,c.longitude,c.name+(c.admin1?" • "+c.admin1:""))}).catch(function(){erroClima()})}
@@ -1392,6 +1401,39 @@ function renderTrialsAdmin(){var stats=document.getElementById("admTrialStats"),
  tabela.innerHTML=admTrials.length?("<table><tr><th>E-mail</th><th>Início</th><th>Fim</th><th>Status</th></tr>"+admTrials.slice(0,50).map(function(x){var ativo=new Date(x.trial_expires_at)>agora;return"<tr><td>"+escJanela(x.email)+"</td><td>"+admDataBR(x.trial_started_at)+"</td><td>"+admDataBR(x.trial_expires_at)+"</td><td>"+(ativo?"🟢 ATIVO — "+admDiasRestantes(x.trial_expires_at)+" dia(s)":"⚪ ENCERRADO")+"</td></tr>"}).join("")+"</table>"+(admTrials.length>50?"<p class='small'>Mostrando os 50 mais recentes de "+admTrials.length+". Exporte o CSV para ver todos.</p>":"")):"<p class='small'>Nenhum teste encontrado para este login.</p>"}
 function exportarTrialsAdmin(){if(!admTrials.length){admTrialStatus("<strong>Carregue os dados primeiro</strong> para exportar.",true);return}var csv="\ufeffemail,inicio,fim,status,dias_restantes\n"+admTrials.map(function(x){var ativo=new Date(x.trial_expires_at)>new Date();return[x.email,admDataBR(x.trial_started_at),admDataBR(x.trial_expires_at),ativo?"ATIVO":"ENCERRADO",ativo?admDiasRestantes(x.trial_expires_at):0].map(function(v){return'"'+String(v).replace(/"/g,'""')+'"'}).join(",")}).join("\n");var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="dronou-testes-gratuitos.csv";a.click();URL.revokeObjectURL(a.href)}
 function copiarEmailsAtivosAdmin(){var emails=admTrials.filter(function(x){return new Date(x.trial_expires_at)>new Date()}).map(function(x){return x.email});if(!emails.length){admTrialStatus("<strong>Nenhum e-mail ativo carregado</strong> para copiar.",true);return}if(navigator.clipboard)navigator.clipboard.writeText(emails.join("; ")).then(function(){admTrialStatus("<strong>✅ "+emails.length+" e-mail(s) ativo(s) copiados.</strong>")})}
+/* ============ ADMIN: VENDAS AUTOMÁTICAS ============ */
+var admVendas=[],admVendasCarregando=false;
+function admVendasStatus(html,ruim){var b=document.getElementById("admVendasStatus");if(!b)return;b.className="result show"+(ruim?" bad":"");b.innerHTML=html}
+async function carregarVendasAdmin(){
+  var stats=document.getElementById("admVendasStats"),tabela=document.getElementById("admVendasTabela");
+  var s=admSbSessao(),tok=s&&s.access_token;
+  if(!tok){admVendasStatus("<strong>Entre com o e-mail de dono autorizado</strong> (botões do quadro de testes, aqui em cima) para carregar as vendas.",true);return}
+  if(admVendasCarregando)return;admVendasCarregando=true;admVendasStatus("Carregando vendas do Supabase…");
+  try{
+    var vendas=await admSbFetch("/rest/v1/vendas?select=criado_em,pedido_id,cliente_nome,cliente_email,plano,codigo,status&order=criado_em.desc&limit=200",{method:"GET"},tok);
+    var estoque=await admSbFetch("/rest/v1/estoque_codigos?select=plano,status&limit=1000",{method:"GET"},tok);
+    admVendas=Array.isArray(vendas)?vendas:[];
+    var est=Array.isArray(estoque)?estoque:[];
+    var livrePro=est.filter(function(x){return x.plano==="pro"&&x.status==="livre"}).length;
+    var livreAdv=est.filter(function(x){return x.plano==="adv"&&x.status==="livre"}).length;
+    var enviados=admVendas.filter(function(x){return x.status==="codigo_enviado"}).length;
+    var erros=admVendas.filter(function(x){return x.status==="erro_email"||x.status==="pendente_email"}).length;
+    var reemb=admVendas.filter(function(x){return x.status==="reembolsado"||x.status==="chargeback"}).length;
+    function num(v,l){return "<div class='num'><b>"+v+"</b><span>"+l+"</span></div>"}
+    if(stats)stats.innerHTML="<div class='grid g4'>"+num(enviados,"códigos entregues")+num(admVendas.length,"vendas registradas")+num(erros,"e-mail pendente/erro")+num(reemb,"reembolsos")+num(livrePro,"estoque Pro livre")+num(livreAdv,"estoque Advanced livre")+"</div>"+((livrePro<=2||livreAdv<=2)?"<div class='alert' style='margin-top:10px'><strong>⚠️ Estoque baixo:</strong> gere e importe um lote novo antes de zerar.</div>":"");
+    if(tabela)tabela.innerHTML=admVendas.length?("<table><tr><th>Quando</th><th>Cliente</th><th>Plano</th><th>Código</th><th>Status</th><th>Pedido</th></tr>"+admVendas.slice(0,50).map(function(x){return "<tr><td>"+escJanela(admDataBR(x.criado_em))+"</td><td>"+escJanela(x.cliente_nome||"")+"<br><span class='small'>"+escJanela(x.cliente_email||"")+"</span></td><td>"+(x.plano==="adv"?"Advanced":"Pro")+"</td><td><code>"+escJanela(x.codigo||"—")+"</code></td><td>"+escJanela(x.status||"")+"</td><td><span class='small'>"+escJanela(x.pedido_id||"")+"</span></td></tr>"}).join("")+"</table>"):"<p class='small'>Nenhuma venda registrada ainda. Assim que a Kiwify aprovar uma compra, ela aparece aqui.</p>";
+    admVendasStatus("<strong>✅ Vendas carregadas</strong> para "+escJanela(s.email||"seu e-mail")+".");
+  }catch(e){
+    if(stats)stats.innerHTML="";if(tabela)tabela.innerHTML="";
+    admVendasStatus("<strong>Não consegui carregar as vendas:</strong> "+escJanela(e.message||"erro desconhecido")+"<br><span class='small'>Confira se você rodou <code>vendas.sql</code> e <code>importar-estoque-kiwify.sql</code> no Supabase.</span>",true);
+  }
+  admVendasCarregando=false;
+}
+function exportarVendasAdmin(){
+  if(!admVendas.length){admVendasStatus("<strong>Carregue as vendas primeiro</strong> para exportar.",true);return}
+  var csv="\ufeffquando,pedido,cliente,email,plano,codigo,status\n"+admVendas.map(function(x){return[admDataBR(x.criado_em),x.pedido_id,x.cliente_nome||"",x.cliente_email||"",x.plano==="adv"?"Advanced":"Pro",x.codigo||"",x.status||""].map(function(v){return'"'+String(v).replace(/"/g,'""')+'"'}).join(",")}).join("\n");
+  var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="dronou-vendas-automaticas.csv";a.click();URL.revokeObjectURL(a.href);
+}
 function adminSairSupabase(avisar){try{localStorage.removeItem("dronouAdminSupabaseSessao");localStorage.removeItem("dronouAdminLoginPendente")}catch(e){}admTrials=[];var st=document.getElementById("admTrialStats"),tb=document.getElementById("admTrialTabela");if(st)st.innerHTML="";if(tb)tb.innerHTML="";if(avisar!==false)admTrialStatus("<strong>Sessão do Supabase encerrada neste navegador.</strong> Os dados continuam salvos no Supabase.")}
 function regAdmin(){try{return JSON.parse(localStorage.getItem("dronouAdminCodigos")||"[]")}catch(e){return[]}}
 function salvarRegAdmin(r){try{localStorage.setItem("dronouAdminCodigos",JSON.stringify(r))}catch(e){}}
@@ -1550,9 +1592,13 @@ function advAtivo(){return planoAtual()==="adv"}
 function atualizarPlanoUI(){var _b=document.getElementById("planoBadge");if(_b)_b.textContent="Plano atual: "+(trialAtivo()?"Teste Advanced 🚀 (até "+new Date(trialFim()).toLocaleDateString("pt-BR")+")":planoAtual()==="adv"?"Advanced 🚀":planoAtual()==="pro"?"Pro ⭐":"Free");var pl=planoAtual(),txt=document.getElementById("planoAtualTxt");if(txt){var exp="";try{var e=+localStorage.getItem("dronouPlanoExpira")||0;if(e)exp=" (válido até "+new Date(e).toLocaleDateString("pt-BR")+")"}catch(_e){}txt.innerHTML=pl==="free"?"Você está no plano <strong>Free</strong>.":(trialAtivo()?"🎁 <strong>Teste grátis do Advanced ativo</strong> até "+new Date(trialFim()).toLocaleDateString("pt-BR")+" — clima/KP, frota ilimitada, favoritos e diário liberados. Gostou? Assine antes de vencer pelo botão de compra abaixo.":pl==="pro"?"Seu plano atual: <strong>Pro</strong> ⭐"+exp+" — quer tudo que for lançado? Faça upgrade para o Advanced pelo botão de compra abaixo.":"Seu plano atual: <strong>Advanced</strong> 🚀"+exp+" — tudo liberado, incluindo as próximas atualizações.")}var fz=document.getElementById("favZona");if(fz)fz.style.display=advAtivo()?"block":"none";var ft=document.getElementById("favTeaser");if(ft)ft.style.display=advAtivo()?"none":"block";var dz=document.getElementById("diarioZona");if(dz)dz.style.display=advAtivo()?"block":"none";var dt=document.getElementById("diarioTeaser");if(dt)dt.style.display=advAtivo()?"none":"block";atualizarTrialUI()}
 function desbloquearPro(){var cod=(document.getElementById("pCodigo").value||"").trim().toUpperCase(),msg=document.getElementById("pMsg");
  if(!cod){msg.className="result show bad";msg.innerHTML="<strong>Digite seu código.</strong> Ele é enviado depois da confirmação do pagamento.";return}
+ function aplicar(pl){try{localStorage.setItem("dronouPlano",pl);localStorage.setItem("dronouPro","1");localStorage.setItem("dronouPlanoExpira",String(Date.now()+365*24*3600*1000))}catch(e){}atualizarPlanoUI();msg.className="result show";msg.innerHTML="<strong>🎉 Plano "+(pl==="adv"?"Advanced 🚀":"Pro ⭐")+" liberado!</strong> Abrindo sua ferramenta…";setTimeout(function(){abrirModulo(proDestino)},700)}
+ function naoReconhecido(){msg.className="result show bad";msg.innerHTML="<strong>Código não reconhecido.</strong> Confira a digitação (com os tracinhos) ou peça um novo pelo Telegram."}
  function ok(h){var pl=(CONFIG.ADV_HASHES.indexOf(h)>-1)?"adv":((CONFIG.PRO_HASHES.indexOf(h)>-1)?"pro":null);
-  if(pl){try{localStorage.setItem("dronouPlano",pl);localStorage.setItem("dronouPro","1");localStorage.setItem("dronouPlanoExpira",String(Date.now()+365*24*3600*1000))}catch(e){}atualizarPlanoUI();msg.className="result show";msg.innerHTML="<strong>🎉 Plano "+(pl==="adv"?"Advanced 🚀":"Pro ⭐")+" liberado!</strong> Abrindo sua ferramenta…";setTimeout(function(){abrirModulo(proDestino)},700)}
- else{msg.className="result show bad";msg.innerHTML="<strong>Código não reconhecido.</strong> Confira a digitação (com os tracinhos) ou peça um novo pelo Telegram."}}
+  if(pl){aplicar(pl);return}
+  if(!h){naoReconhecido();return}
+  msg.className="result show";msg.innerHTML="Conferindo seu código…";
+  fetch(CONFIG.SUPABASE_URL+"/rest/v1/rpc/validar_codigo_venda",{method:"POST",headers:{"apikey":CONFIG.SUPABASE_ANON_KEY,"Authorization":"Bearer "+CONFIG.SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify({p_codigo_hash:h})}).then(function(r){return r.json()}).then(function(rows){var pl2=null;if(typeof rows==="string")pl2=rows;else if(rows&&rows[0])pl2=rows[0].plano||rows[0].validar_codigo_venda||null;if(pl2==="adv"||pl2==="pro"){aplicar(pl2)}else{naoReconhecido()}}).catch(function(){naoReconhecido()})}
  if(window.crypto&&crypto.subtle&&crypto.subtle.digest){crypto.subtle.digest("SHA-256",new TextEncoder().encode(cod)).then(function(b){ok(Array.prototype.map.call(new Uint8Array(b),function(x){return ("0"+x.toString(16)).slice(-2)}).join(""))}).catch(function(){ok("")})}
  else{ok("")}}
 function abrirModulo(id,rolar){
