@@ -370,6 +370,13 @@ table th{background:#eaf6f5;color:#0b4f4a}
 /* Logo clara na lateral (fundo transparente, sem cartao grafite) */
 #sidebar .side-logo{background:transparent;border-radius:0;padding:2px!important;border-bottom:none}
 #sidebar .side-logo small{color:#5e737a}
+
+/* Correcao mobile (19/10/2026): barra inferior nao cobre conteudo + area segura do iPhone */
+@media(max-width:700px){
+  body{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))!important}
+  .barra-celular{padding-bottom:env(safe-area-inset-bottom,0px)!important}
+  #btnTopo{bottom:calc(100px + env(safe-area-inset-bottom,0px))!important}
+}
 </style>
 </head>
 <body>
@@ -1720,7 +1727,7 @@ function abrirModulo(id,rolar){
   document.querySelectorAll(".modulo").forEach(function(m){m.classList.toggle("ativo",m===alvo)});
   alvo.classList.add("visivel");if(id==="inicio"){atualizarResumoFrota();atualizarContagem()}
   document.querySelectorAll("nav a, .barra-celular a").forEach(function(a){a.classList.toggle("ativo",a.getAttribute("href")==="#"+id)});document.querySelectorAll("[data-modulo]").forEach(function(b){b.classList.toggle("ativo",b.dataset.modulo===id)});
-  try{history.replaceState(null,"","#"+id)}catch(e){}
+  if(rolar!==false){try{history.replaceState(null,"","#"+id)}catch(e){}}
   if(id==="clima"&&typeof iniciarClima==="function"){iniciarClima()}
   if(id==="carteira"&&typeof iniciarCarteira==="function"){iniciarCarteira()}
   if(id==="sarpas"&&typeof iniciarAssistenteSarpas==="function"){iniciarAssistenteSarpas()}
@@ -1733,7 +1740,7 @@ document.querySelectorAll(".modulo:not(#inicio)").forEach(function(m){
   var voltar=document.createElement("p");voltar.className="no-print";voltar.innerHTML='<button class="btn sec" onclick="abrirModulo(\'inicio\')">← Voltar ao início</button>';
   m.insertBefore(voltar,m.children[1]||null);
 });
-(function(){var ini=(location.hash||"").slice(1);if(ini&&document.getElementById(ini)&&document.getElementById(ini).classList.contains("modulo")){abrirModulo(ini,false)}else{abrirModulo("inicio",false)}})();
+(function(){var ini=(location.hash||"").slice(1);var ok=!!(ini&&document.getElementById(ini)&&document.getElementById(ini).classList.contains("modulo"));if(ok&&ini!=="inicio"){abrirModulo(ini,false);setTimeout(function(){var a=document.getElementById(ini);if(a){window.scrollTo(0,Math.max(0,a.getBoundingClientRect().top+window.scrollY-78))}},90)}else{abrirModulo("inicio",false);window.scrollTo(0,0);setTimeout(function(){window.scrollTo(0,0)},90)}})();
 
 /* ============ FLUIDEZ: revelação, menu ativo e voltar ao topo ============ */
 (function(){
