@@ -580,7 +580,7 @@ nav a{font-family:'Sora',system-ui,sans-serif;font-weight:600}
 <div class="grid g2">
 <div><label>Cidade do voo</label><input id="cBusca" name="cidadeVoo" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Ex.: Ubatuba-SP, São Paulo, Curitiba">
 <div class="no-print" style="margin-top:8px"><button class="btn" onclick="buscarCidade()">🔎 Buscar cidade</button><button class="btn sec" onclick="usarGPS()">📍 Usar minha localização</button></div></div>
-<div><div class="alert blue"><strong>Como ler:</strong> vento sustentado e rajada mandam no controle do drone; KP até 3 é tranquilo, 4 pede cautela e 5+ pode degradar GPS e bússola — adie voos de precisão.</div></div>
+<div><div class="alert blue"><strong>Como ler:</strong> vento sustentado e rajada mandam no controle do drone; KP até 3 é tranquilo, 4 pede cautela e 5+ pode degradar GPS e bússola — adie voos de precisão.<br>🛰️ <strong>Satélites:</strong> “visíveis” é a estimativa orbital para o local e a hora (GPS + GLONASS + Galileo + BeiDou acima de 10° do horizonte); “bloqueados” estima quantos têm geometria forte para o fix (acima de 25°). O número real de satélites travados é o que o <strong>seu drone</strong> mostra na tela — prédios, relevo e o KP alto podem reduzir.</div></div>
 </div>
 <div id="favZona" style="display:none;margin-top:10px"><h3>⭐ Meus locais favoritos <span class="protag">ADVANCED</span></h3><div id="favChips"></div><p class="no-print"><button class="btn sec" onclick="salvarFav()">⭐ Salvar o local exibido agora</button></p></div>
 <div id="favTeaser" class="alert" style="margin-top:10px">⭐ <strong>Advanced:</strong> salve seus locais de voo favoritos e abra o clima deles com um toque. <button class="btn sec" onclick="abrirModulo('pro')">Ver o Advanced →</button></div>
@@ -593,6 +593,8 @@ nav a{font-family:'Sora',system-ui,sans-serif;font-weight:600}
 <div class="wxcard"><span>👀 Visibilidade</span><b id="cVis">—</b><small>alcance visual</small></div>
 <div class="wxcard"><span>☁️ Nuvens</span><b id="cNuvem">—</b><small>cobertura</small></div>
 <div class="wxcard"><span>🧲 Índice KP</span><b id="cKp">—</b><small id="cKpTxt">geomagnético</small></div>
+<div class="wxcard"><span>🛰️ Satélites visíveis</span><b id="cSatVis">—</b><small id="cSatVisTxt">estimativa orbital no local</small></div>
+<div class="wxcard"><span>🔒 Satélites bloqueados</span><b id="cSatBloq">—</b><small id="cSatBloqTxt">fix provável no local</small></div>
 <div class="wxcard"><span>🌅 Sol</span><b id="cSol">—</b><small>nascer → pôr do sol</small></div>
 </div>
 <div id="painelJanela" style="display:none;margin-top:20px">
@@ -1238,7 +1240,7 @@ atualizarProg();atualizarContagem();
 
 /* ============ Clima DE VOO ============ */
 var climaIniciado=false, ultimoLocal=null, climaAtual=null, janelasAtuais=[];
-function iniciarClima(){if(climaIniciado)return;climaIniciado=true;var cb=document.getElementById("cBusca");if(cb&&/^[\d\s.,-]+$/.test((cb.value||"").trim())){cb.value=""}carregarClima(-23.5505,-46.6333,"São Paulo, SP (padrão — busque sua cidade)");setInterval(atualizarKP,60000);document.addEventListener("visibilitychange",function(){if(!document.hidden)atualizarKP()})}
+function iniciarClima(){if(climaIniciado)return;climaIniciado=true;var cb=document.getElementById("cBusca");if(cb&&/^[\d\s.,-]+$/.test((cb.value||"").trim())){cb.value=""}carregarClima(-23.5505,-46.6333,"São Paulo, SP (padrão — busque sua cidade)");setInterval(function(){atualizarKP();atualizarSatelites()},60000);document.addEventListener("visibilitychange",function(){if(!document.hidden){atualizarKP();atualizarSatelites()}})}
 function cardinal(g){var d=["N","NE","L","SE","S","SO","O","NO"];return d[Math.round(g/45)%8]}
 function condicao(c){if(c===0)return"Céu limpo";if(c<=3)return"Nublado";if(c===45||c===48)return"Nevoeiro";if(c>=51&&c<=57)return"Garoa";if(c>=61&&c<=67)return"Chuva";if(c>=71&&c<=77)return"Neve";if(c>=80&&c<=82)return"Pancadas";if(c>=95)return"Tempestade";return"Código "+c}
 function buscarCidade(){var q=(document.getElementById("cBusca").value||"").trim();if(!q){return}if(/^[\d\s.,-]+$/.test(q)){document.getElementById("cBusca").value="";document.getElementById("climaStatus").className="result show bad";document.getElementById("climaStatus").innerHTML="<strong>Digite o nome da cidade.</strong> Ex.: Pouso Alegre-MG, Ubatuba-SP.";return}
@@ -1276,6 +1278,28 @@ function mostrarKP(d){var el=document.getElementById("cKp"),tx=document.getEleme
  el.textContent=(+kp).toFixed(1).replace(".",",");
  tx.textContent=(kp<=3?"GPS/bússola tranquilos":kp<5?"cautela com GPS":"risco ao GPS/bússola")+(partes.length?" • "+partes.join(" • "):"")}
 function atualizarKP(){return Promise.all([fetchNOAA("https://services.swpc.noaa.gov/json/planetary_k_index_1m.json"),fetchNOAA("https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json"),fetchNOAA("https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt",true)]).then(function(par){var d=analisarKP(par[0],par[1],par[2]);mostrarKP(d);if(typeof climaAtual!=="undefined"&&climaAtual){climaAtual.kpDados=d;if(typeof renderJanelas==="function")renderJanelas()}return d}).catch(function(){return null})}
+var satEstado={recs:null,buscando:false,libCb:null};
+function carregarLibSatelites(cb){if(window.satellite&&window.satellite.twoline2satrec){cb(true);return}
+ if(satEstado.libCb){satEstado.libCb.push(cb);return}
+ satEstado.libCb=[cb];var pronto=function(ok){var fns=satEstado.libCb||[];satEstado.libCb=null;fns.forEach(function(f){f(ok)})};
+ var sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js";sc.async=true;sc.onload=function(){pronto(!!(window.satellite&&window.satellite.twoline2satrec))};sc.onerror=function(){pronto(false)};document.head.appendChild(sc)}
+function satMontarRecs(lista){var recs=[];(lista||[]).forEach(function(s){try{var r=window.satellite.twoline2satrec(s.l1,s.l2);if(r)recs.push({c:s.c,rec:r})}catch(e){}});return recs}
+function obterSatrecs(cb){if(satEstado.recs&&satEstado.recs.length){cb(satEstado.recs);return}
+ if(satEstado.buscando){var espera=setInterval(function(){if(!satEstado.buscando){clearInterval(espera);cb(satEstado.recs)}},300);return}
+ try{var cache=JSON.parse(localStorage.getItem("dronouTleGnss")||"null");if(cache&&cache.lista&&cache.lista.length&&Date.now()-cache.em<12*3600*1000){satEstado.recs=satMontarRecs(cache.lista);cb(satEstado.recs);return}}catch(e){}
+ satEstado.buscando=true;var grupos=[["GPS","GPS"],["GLONASS","GLO"],["GALILEO","GAL"],["BEIDOU","BDS"]];
+ Promise.all(grupos.map(function(g){return fetch("https://tle.ivanstanojevic.me/api/tle/?search="+g[0]+"&page-size=100").then(function(r){if(!r.ok)throw new Error("tle");return r.json()}).then(function(j){return (j.member||[]).filter(function(m){return !/DEB|R\/B/.test(m.name||"")}).map(function(m){return {c:g[1],l1:m.line1,l2:m.line2}})}).catch(function(){return []})})).then(function(partes){var lista=[];partes.forEach(function(p){lista=lista.concat(p)});satEstado.buscando=false;
+  if(lista.length){try{localStorage.setItem("dronouTleGnss",JSON.stringify({em:Date.now(),lista:lista}))}catch(e){}satEstado.recs=satMontarRecs(lista)}
+  cb(satEstado.recs)}).catch(function(){satEstado.buscando=false;cb(null)})}
+function satIndisponivel(){var v=document.getElementById("cSatVis"),b=document.getElementById("cSatBloq");if(v){v.textContent="—";document.getElementById("cSatVisTxt").textContent="efemérides indisponíveis agora"}if(b){b.textContent="—";document.getElementById("cSatBloqTxt").textContent="efemérides indisponíveis agora"}}
+function atualizarSatelites(){if(typeof climaAtual==="undefined"||!climaAtual||climaAtual.lat===undefined||climaAtual.lat===null)return;
+ carregarLibSatelites(function(ok){if(!ok){satIndisponivel();return}
+ obterSatrecs(function(recs){if(!recs||!recs.length){satIndisponivel();return}
+  try{var agora=new Date(),gmst=window.satellite.gstime(agora),obs={longitude:window.satellite.degreesToRadians(climaAtual.lon),latitude:window.satellite.degreesToRadians(climaAtual.lat),height:0.1},vis=0,bloq=0,por={GPS:0,GLO:0,GAL:0,BDS:0};
+  recs.forEach(function(s){var pv=window.satellite.propagate(s.rec,agora);if(!pv||!pv.position)return;var ecf=window.satellite.eciToEcf(pv.position,gmst),look=window.satellite.ecfToLookAngles(obs,ecf),el=window.satellite.radiansToDegrees(look.elevation);if(el>=10){vis++;if(por[s.c]!==undefined)por[s.c]++;if(el>=25)bloq++}});
+  var ev=document.getElementById("cSatVis"),eb=document.getElementById("cSatBloq");if(!ev||!eb)return;
+  ev.textContent=vis;document.getElementById("cSatVisTxt").textContent="GPS "+por.GPS+" • GLO "+por.GLO+" • GAL "+por.GAL+" • BDS "+por.BDS+" (acima de 10°)";
+  eb.textContent=bloq;var kp=(climaAtual.kpDados&&climaAtual.kpDados.risco)||0;document.getElementById("cSatBloqTxt").textContent="fix provável (acima de 25°)"+(kp>=5?" • KP alto pode reduzir o fix":" • o drone confirma o nº real")}catch(e){satIndisponivel()}})})}
 function escJanela(v){return String(v===null||v===undefined?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 function fmt1Janela(v){return v===null||v===undefined||isNaN(v)?"—":(+v).toFixed(1).replace(".",",")}
 function dataStrJanela(t){var p=String(t||"").split("T")[0].split("-");return p.length===3?new Date(+p[0],+p[1]-1,+p[2]):new Date(t)}
@@ -1331,6 +1355,7 @@ function carregarClima(lat,lon,nome){ultimoLocal={lat:lat,lon:lon,nome:nome};
   climaAtual={j:j,h:h,c:c,idx:idx,kpDados:kpDados,nome:nome,lat:lat,lon:lon,sol:{}};
   if(j.daily&&j.daily.time){j.daily.time.forEach(function(dia,di){climaAtual.sol[dia]={nascer:(j.daily.sunrise[di]||"").slice(11,16),por:(j.daily.sunset[di]||"").slice(11,16)}})}
   document.getElementById("cSol").textContent=j.daily.sunrise[0].slice(11,16)+" → "+j.daily.sunset[0].slice(11,16);
+  atualizarSatelites();
   var nota=100,avisos=[];
   function pen(v,faixas){for(var k=0;k<faixas.length;k++){if(v>faixas[k][0]){nota-=faixas[k][1];avisos.push(faixas[k][2]);return}}}
   pen(c.wind_speed_10m,[[35,60,"vento forte demais para a maioria dos drones"],[25,35,"vento forte: só drones robustos e piloto experiente"],[15,15,"vento moderado: atenção em mini drones"]]);
