@@ -969,7 +969,7 @@ table th{background:#eaf6f5;color:#0b4f4a}
 
 <footer><div class="wrap"><div class="cols">
 <div><div class="marca">DRONOU</div><p class="small" style="color:#b7d8d2">Do cadastro ao voo autorizado, sem erro. Plataforma educacional independente para pilotos de drone no Brasil.</p><p class="small" style="color:#8fb8b1">Emergências: 190 • 192 • 193<br>Na dúvida, não decoce.</p></div>
-<div><h4>Plataforma</h4><a href="#jornada" onclick="abrirModulo('jornada');return false">Regularizar meu drone</a><a href="#simuladores" onclick="abrirModulo('simuladores');return false">Simuladores</a><a href="#quiz" onclick="abrirModulo('quiz');return false">Simulado ANAC</a><a href="#clima" onclick="abrirModulo('clima');return false">Clima de voo</a><a href="#pro" onclick="abrirModulo('pro');return false">Planos e preços</a></div>
+<div><h4>Plataforma</h4><a href="#jornada" onclick="abrirModulo('jornada');return false">Regularizar meu drone</a><a href="#simuladores" onclick="abrirModulo('simuladores');return false">Simuladores</a><a href="#quiz" onclick="abrirModulo('quiz');return false">Simulado ANAC</a><a href="#clima" onclick="abrirModulo('clima');return false">Clima de voo</a><a href="#pro" onclick="abrirModulo('pro');return false">Planos e preços</a><a href="clima-para-voar-hoje.html">Guia: clima para voar hoje</a><a href="melhor-hora-para-voar-drone.html">Guia: melhor hora para voar</a></div>
 <div><h4>Sistemas oficiais</h4><a href="https://santosdumont.anac.gov.br/menu/f?p=133" target="_blank" rel="noopener">SISANT — ANAC</a><a href="https://servicos.decea.mil.br/sarpas/" target="_blank" rel="noopener">SARPAS — DECEA</a><a href="https://capacitacao.anac.gov.br/course/view.php?id=4426" target="_blank" rel="noopener">Prova teórica — ANAC</a><a href="https://sei.anatel.gov.br" target="_blank" rel="noopener">SEI — ANATEL</a></div>
 <div><h4>Suporte</h4><a href="https://t.me/dronoubr" target="_blank" rel="noopener">Telegram oficial @dronoubr</a><a href="#ajuda" onclick="abrirModulo('ajuda');return false">Diagnóstico gratuito</a><a href="#materiais" onclick="abrirModulo('materiais');return false">Materiais e guias</a></div>
 </div><p class="small" style="color:#7ea8a1;border-top:1px solid rgba(255,255,255,.14);margin-top:20px;padding-top:14px">DRONOU © 2026 — Material educacional, sem vínculo com ANAC, DECEA, ANATEL ou MAPA. Normas mudam: em conflito, vale a norma e o sistema oficial.</p></div></footer>
@@ -1465,7 +1465,29 @@ function carregarClima(lat,lon,nome){ultimoLocal={lat:lat,lon:lon,nome:nome};
 
 
 /* ============ CONTADOR DE VISITAS (GoatCounter) ============ */
-if(CONFIG.GOATCOUNTER){var _gc=document.createElement("script");_gc.async=true;_gc.src="//gc.zgo.at/count.js";_gc.setAttribute("data-goatcounter","https://"+CONFIG.GOATCOUNTER+".goatcounter.com/count");document.head.appendChild(_gc)}
+var DRONOU_SEM_CONTAR=false;
+try{
+  var _q0=new URLSearchParams(location.search);
+  if(_q0.get("eu")==="1")localStorage.setItem("dronouSemContar","1");
+  if(_q0.get("eu")==="0")localStorage.removeItem("dronouSemContar");
+  DRONOU_SEM_CONTAR=localStorage.getItem("dronouSemContar")==="1";
+}catch(e){}
+if(CONFIG.GOATCOUNTER&&!DRONOU_SEM_CONTAR){
+  try{
+    window.goatcounter={referrer:function(){
+      try{
+        var p=new URLSearchParams(location.search);
+        var r=p.get("ref")||p.get("origem")||p.get("utm_source");
+        if(r){
+          var c=p.get("utm_campaign")||p.get("campanha");
+          return c?(r+" / "+c):r;
+        }
+      }catch(e){}
+      return document.referrer;
+    }};
+  }catch(e){}
+  var _gc=document.createElement("script");_gc.async=true;_gc.src="//gc.zgo.at/count.js";_gc.setAttribute("data-goatcounter","https://"+CONFIG.GOATCOUNTER+".goatcounter.com/count");document.head.appendChild(_gc)
+}
 var CTA_CONVERSAO="<div class=\"alert green\" style=\"margin-top:12px\"><strong>🌦️ Esse é o “antes” do voo.</strong> O próximo passo é o céu: vento, chuva, índice KP e a melhor hora de voar no seu endereço.<p style=\"margin:10px 0 0\"><button class=\"btn\" onclick=\"acaoTrialCTA()\">🎁 Testar 7 dias grátis</button> <button class=\"btn sec\" onclick=\"abrirModulo('pro')\">Ver planos</button></p></div>";
 function mostrarAvisoPro(destino){
   try{
@@ -1482,7 +1504,7 @@ function mostrarAvisoPro(destino){
       "Se quiser ver o céu do seu endereço e a melhor hora de voar, teste o Advanced por 7 dias, sem cartão.";
   }catch(e){}
 }
-function gcEvento(nome){try{if(window.goatcounter&&window.goatcounter.count){window.goatcounter.count({path:nome,event:true,no_session:true})}}catch(e){}}
+function gcEvento(nome){try{if(DRONOU_SEM_CONTAR)return;if(window.goatcounter&&window.goatcounter.count){window.goatcounter.count({path:nome,event:true,no_session:true})}}catch(e){}}
 function carregarVisitas(){
   var box=document.getElementById("admVisitas");if(!box)return;
   if(!CONFIG.GOATCOUNTER){box.innerHTML="📊 <strong>Visitas:</strong> crie a conta grátis em <strong>goatcounter.com</strong> e coloque o código em <code>CONFIG.GOATCOUNTER</code>.";return}
