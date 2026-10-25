@@ -1765,9 +1765,10 @@ function desbloquearPro(){var cod=(document.getElementById("pCodigo").value||"")
  if(window.crypto&&crypto.subtle&&crypto.subtle.digest){crypto.subtle.digest("SHA-256",new TextEncoder().encode(cod)).then(function(b){ok(Array.prototype.map.call(new Uint8Array(b),function(x){return ("0"+x.toString(16)).slice(-2)}).join(""))}).catch(function(){ok("")})}
  else{ok("")}}
 function abrirModulo(id,rolar){
-  if(MODULOS_PRO.indexOf(id)>-1&&!proAtivo()){gcEvento("bloqueio/"+id);proDestino=id;id="pro";setTimeout(function(){mostrarAvisoPro(proDestino)},60)}
+  if(MODULOS_PRO.indexOf(id)>-1&&!proAtivo()){gcEvento("bloqueio/"+id);window._dronouBloq=1;proDestino=id;id="pro";setTimeout(function(){mostrarAvisoPro(proDestino)},60)}
   var alvo=document.getElementById(id);
   if(!alvo||!alvo.classList.contains("modulo")){return}
+  if(id!=="inicio"&&id!==window._dronouModuloAtual){if(window._dronouBloq){window._dronouBloq=0}else{window._dronouModuloAtual=id;gcEvento("modulo/"+id)}}
   document.querySelectorAll(".modulo").forEach(function(m){m.classList.toggle("ativo",m===alvo)});
   alvo.classList.add("visivel");if(id==="inicio"){atualizarResumoFrota();atualizarContagem()}
   document.querySelectorAll("nav a, .barra-celular a").forEach(function(a){a.classList.toggle("ativo",a.getAttribute("href")==="#"+id)});document.querySelectorAll("[data-modulo]").forEach(function(b){b.classList.toggle("ativo",b.dataset.modulo===id)});
@@ -1779,7 +1780,7 @@ function abrirModulo(id,rolar){
 }
 document.addEventListener("click",function(ev){var a=ev.target&&ev.target.closest?ev.target.closest(".buy-link"):null;if(a){gcEvento("checkout/"+(a.getAttribute("data-plano")||"?"))}},true);
 document.querySelectorAll("a[href^='#']").forEach(function(a){
-  a.addEventListener("click",function(ev){var id=a.getAttribute("href").slice(1);var el=document.getElementById(id);if(el&&el.classList.contains("modulo")){ev.preventDefault();abrirModulo(id)}});
+  a.addEventListener("click",function(ev){if(a.hasAttribute("onclick")){return}var id=a.getAttribute("href").slice(1);var el=document.getElementById(id);if(el&&el.classList.contains("modulo")){ev.preventDefault();abrirModulo(id)}});
 });
 document.querySelectorAll(".modulo:not(#inicio)").forEach(function(m){
   var voltar=document.createElement("p");voltar.className="no-print";voltar.innerHTML='<button class="btn sec" onclick="abrirModulo(\'inicio\')">← Voltar ao início</button>';
